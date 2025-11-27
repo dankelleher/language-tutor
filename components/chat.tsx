@@ -139,7 +139,7 @@ export function Chat({ language, onLanguageChange }: ChatProps) {
       )}
 
       {/* Main content area */}
-      <div className={`flex flex-col flex-1 max-w-4xl mx-auto overflow-hidden ${messages.length > 0 ? 'pl-7 sm:pl-0' : ''}`}>
+      <div className={`flex flex-col flex-1 w-full sm:max-w-4xl sm:mx-auto overflow-hidden ${messages.length > 0 ? 'pl-7 sm:pl-0' : ''}`}>
         {/* Header */}
         <div className="flex-shrink-0 border-b border-honey-200 bg-white px-3 py-2 sm:p-4 shadow-sm">
           <div className="flex items-center justify-between gap-2">
@@ -201,7 +201,7 @@ export function Chat({ language, onLanguageChange }: ChatProps) {
             className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
           >
             <div
-              className={`max-w-[85%] sm:max-w-2xl rounded-lg p-3 sm:p-4 ${
+              className={`max-w-[95%] sm:max-w-2xl rounded-lg p-3 sm:p-4 ${
                 message.role === 'user'
                   ? 'bg-honey-500 text-white'
                   : 'bg-white border border-honey-200 text-honey-900 shadow-sm'
@@ -219,7 +219,7 @@ export function Chat({ language, onLanguageChange }: ChatProps) {
         {/* Streaming response */}
         {isLoading && object && (
           <div className="flex justify-start">
-            <div className="max-w-[85%] sm:max-w-2xl rounded-lg p-3 sm:p-4 bg-white border border-honey-200 text-honey-900 shadow-sm">
+            <div className="max-w-[95%] sm:max-w-2xl rounded-lg p-3 sm:p-4 bg-white border border-honey-200 text-honey-900 shadow-sm">
               <CorrectionDisplay correction={object} />
             </div>
           </div>
@@ -227,7 +227,7 @@ export function Chat({ language, onLanguageChange }: ChatProps) {
 
         {isLoading && !object && (
           <div className="flex justify-start">
-            <div className="max-w-[85%] sm:max-w-2xl rounded-lg p-3 sm:p-4 bg-white border border-honey-200 text-honey-500 italic shadow-sm text-sm sm:text-base">
+            <div className="max-w-[95%] sm:max-w-2xl rounded-lg p-3 sm:p-4 bg-white border border-honey-200 text-honey-500 italic shadow-sm text-sm sm:text-base">
               Buzzing away...
             </div>
           </div>

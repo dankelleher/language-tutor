@@ -8,7 +8,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: PrismaAdapter(prisma),
   providers: [
     Resend({
-      from: 'Language Tutor <onboarding@resend.dev>',
+      from: 'Buzzling <noreply@buzzling.app>',
     }),
     // Dev-only credentials provider for testing
     ...(process.env.NODE_ENV === 'development'
