@@ -181,7 +181,16 @@ export function Chat({ language, onLanguageChange }: ChatProps) {
         <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-3 sm:space-y-4">
         {messages.length === 0 && !isLoading && (
           <div className="text-center text-honey-700 mt-20">
-            <Image src="/buzz-128.png" alt="Buzz" width={128} height={128} className="mb-4 mx-auto" />
+            <div className="relative inline-block mb-4">
+              <Image src="/buzz-128.png" alt="Buzz" width={128} height={128} className="mx-auto" />
+              <Image
+                src={language === 'French' ? '/bonjour.png' : '/hello.png'}
+                alt={language === 'French' ? 'Bonjour' : 'Hello'}
+                width={100}
+                height={70}
+                className="absolute -top-2 -right-16 sm:-right-20"
+              />
+            </div>
             <p className="text-xl font-semibold mb-2 text-honey-800">Welcome to the hive!</p>
             <p className="text-sm mb-6 text-honey-600">
               Let's pollinate your brain with some {language}!
