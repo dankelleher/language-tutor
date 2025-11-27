@@ -43,3 +43,6 @@ yarn-error.log*
 
 # Generated
 generated/
+
+# Playwright
+.playwright-mcp/
