@@ -1,19 +1,19 @@
-# Language Tutor
+# Buzzling
 
-An AI-powered language learning application built with Next.js and Claude (Anthropic).
+Your AI-powered language learning companion built with Next.js and Claude (Anthropic).
 
 ## Features
 
-- 🌍 **Multiple Languages**: Learn German, French, Spanish, Italian, Portuguese, Japanese, Chinese, or Korean
-- 🎯 **Adaptive Learning**: AI adjusts difficulty based on your skill level (A1-C2)
-- ✅ **Instant Feedback**: Get corrections, explanations, and guidance in real-time
-- 💬 **Interactive Chat**: Natural conversation-based learning experience
-- 📱 **Responsive Design**: Works on desktop and mobile devices
-- 💾 **Local Persistence**: Your conversation history is saved locally
+- **Multiple Languages**: Learn German, French, Spanish, Italian, Portuguese, Japanese, Chinese, or Korean
+- **Adaptive Learning**: AI adjusts difficulty based on your skill level (A1-C2)
+- **Instant Feedback**: Get corrections, explanations, and guidance in real-time
+- **Interactive Chat**: Natural conversation-based learning experience
+- **Responsive Design**: Works on desktop and mobile devices
+- **Local Persistence**: Your conversation history is saved locally
 
 ## Tech Stack
 
-- **Framework**: Next.js 15 (App Router)
+- **Framework**: Next.js 16 (App Router)
 - **AI**: Vercel AI SDK with Claude Sonnet 4.5
 - **Styling**: Tailwind CSS
 - **Language**: TypeScript
@@ -63,7 +63,7 @@ pnpm cli
 
 ## How It Works
 
-The application uses Claude's AI to:
+Buzzling uses Claude's AI to:
 
 1. Provide sentences in English for you to translate
 2. Analyze your translations for accuracy
@@ -73,9 +73,9 @@ The application uses Claude's AI to:
 
 ### Architecture
 
-- **Frontend**: React components with Vercel AI SDK's `useChat` hook
-- **Backend**: Next.js API routes with `streamText` and AI tools
-- **AI Tool**: Structured feedback via the `provideCorrection` tool
+- **Frontend**: React components with Vercel AI SDK's `useObject` hook
+- **Backend**: Next.js API routes with `streamObject` for structured responses
+- **AI Tool**: Structured feedback via Zod schemas
 - **Streaming**: Real-time responses for immediate feedback
 
 ## Project Structure
@@ -114,7 +114,3 @@ vercel
 ```
 
 Or any other Next.js hosting platform.
-
-## License
-
-ISC

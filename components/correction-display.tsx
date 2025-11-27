@@ -77,8 +77,8 @@ const SentenceWithParts = ({ sentence, parts }: SentenceWithPartsProps) => {
           <button
             key={idx}
             onClick={() => setSelectedPart(selectedPart === segment.part ? null : segment.part!)}
-            className={`underline decoration-purple-400 decoration-2 underline-offset-2 hover:bg-purple-100 rounded px-0.5 transition-colors ${
-              selectedPart === segment.part ? 'bg-purple-200' : ''
+            className={`underline decoration-honey-500 decoration-2 underline-offset-2 hover:bg-honey-100 rounded px-0.5 transition-colors ${
+              selectedPart === segment.part ? 'bg-honey-200' : ''
             }`}
           >
             {segment.text}
@@ -88,13 +88,13 @@ const SentenceWithParts = ({ sentence, parts }: SentenceWithPartsProps) => {
         )
       )}
       {selectedPart && (
-        <span className="block mt-2 p-2 bg-purple-50 rounded text-xs border border-purple-200">
-          <span className="font-semibold text-purple-700">{selectedPart.text}</span>
+        <span className="block mt-2 p-2 bg-honey-50 rounded text-xs border border-honey-200">
+          <span className="font-semibold text-honey-700">{selectedPart.text}</span>
           {selectedPart.translation && (
-            <span className="text-purple-600"> → {selectedPart.translation}</span>
+            <span className="text-honey-600"> → {selectedPart.translation}</span>
           )}
           {selectedPart.notes && (
-            <span className="block mt-1 text-gray-600">{selectedPart.notes}</span>
+            <span className="block mt-1 text-honey-700">{selectedPart.notes}</span>
           )}
         </span>
       )}
@@ -128,8 +128,8 @@ export function CorrectionDisplay({ correction }: CorrectionDisplayProps) {
 
       {/* Submitted Translation */}
       {correction.submittedSentence && (
-        <div className={correction.chatMessage ? 'border-t pt-3 border-gray-300' : ''}>
-          <p className="text-xs font-semibold text-gray-600 mb-1">Your Translation:</p>
+        <div className={correction.chatMessage ? 'border-t pt-3 border-honey-200' : ''}>
+          <p className="text-xs font-semibold text-honey-600 mb-1">Your Translation:</p>
           <p className="text-sm italic">{correction.submittedSentence}</p>
         </div>
       )}
@@ -145,12 +145,12 @@ export function CorrectionDisplay({ correction }: CorrectionDisplayProps) {
       {/* Explanations */}
       {correction.explanations && correction.explanations.filter(Boolean).length > 0 && (
         <div ref={explanationsRef}>
-          <p className="text-xs font-semibold text-orange-700 mb-2">💡 Explanations:</p>
+          <p className="text-xs font-semibold text-honey-700 mb-2">💡 Explanations:</p>
           <div className="space-y-2">
             {correction.explanations.filter(Boolean).map((explanation, idx) => (
               <div key={idx} className="relative">
                 <Card
-                  className="bg-orange-50 border-orange-200 cursor-pointer transition-transform duration-200 hover:scale-[1.02]"
+                  className="bg-honey-50 border-honey-200 cursor-pointer transition-transform duration-200 hover:scale-[1.02]"
                   onClick={() => setSelectedExplanation(selectedExplanation === idx ? null : idx)}
                 >
                   <CardContent className="p-3 pr-6">
@@ -158,7 +158,7 @@ export function CorrectionDisplay({ correction }: CorrectionDisplayProps) {
                   </CardContent>
                 </Card>
                 <button
-                  className={`absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 px-4 py-2 text-sm font-medium text-orange-700 bg-orange-100 border border-orange-200 rounded-full hover:bg-orange-200 whitespace-nowrap shadow-sm transition-all duration-200 ${
+                  className={`absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 px-4 py-2 text-sm font-medium text-honey-700 bg-honey-100 border border-honey-200 rounded-full hover:bg-honey-200 whitespace-nowrap shadow-sm transition-all duration-200 ${
                     selectedExplanation === idx
                       ? 'opacity-100 scale-100'
                       : 'opacity-0 scale-90 pointer-events-none'
@@ -175,8 +175,8 @@ export function CorrectionDisplay({ correction }: CorrectionDisplayProps) {
       {/* Level Assessment */}
       {correction.evaluatedLevel && (
         <div className="flex items-center gap-2">
-          <p className="text-xs font-semibold text-gray-600">Current Level:</p>
-          <span className="text-xs px-2 py-1 bg-blue-100 text-blue-800 rounded-full font-medium">
+          <p className="text-xs font-semibold text-honey-600">Current Level:</p>
+          <span className="text-xs px-2 py-1 bg-honey-100 text-honey-800 rounded-full font-medium">
             {correction.evaluatedLevel}
           </span>
         </div>
@@ -184,8 +184,8 @@ export function CorrectionDisplay({ correction }: CorrectionDisplayProps) {
 
       {/* Next Challenge */}
       {correction.nextExercise?.fullSentence && (
-        <div className="border-t pt-3 mt-3 border-gray-300">
-          <p className="text-xs font-semibold text-purple-700 mb-2">🎯 Next Challenge:</p>
+        <div className="border-t pt-3 mt-3 border-honey-200">
+          <p className="text-xs font-semibold text-honey-700 mb-2">🎯 Next Challenge:</p>
           <p className="text-sm font-medium bg-white/50 p-2 rounded">
             <SentenceWithParts
               sentence={correction.nextExercise.fullSentence}

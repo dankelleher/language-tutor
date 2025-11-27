@@ -3,8 +3,8 @@ import { Providers } from "@/components/providers";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Language Tutor",
-  description: "An AI-powered language tutor using Claude",
+  title: "Buzzling",
+  description: "Buzzling - Your AI-powered language learning companion",
 };
 
 export default function RootLayout({

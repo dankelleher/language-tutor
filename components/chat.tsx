@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { experimental_useObject as useObject } from '@ai-sdk/react';
 import { ChatInput } from './chat-input';
 import { CorrectionDisplay } from './correction-display';
-import { tutorResponseSchema, type TutorResponse, type Language } from '@/lib/types';
+import { tutorResponseSchema, type TutorResponse, type Language, languages } from '@/lib/types';
 
 interface ChatMessage {
   id: string;
@@ -93,28 +93,26 @@ export function Chat({ language, onLanguageChange }: ChatProps) {
   };
 
   return (
-    <div className="flex flex-col h-screen max-w-4xl mx-auto">
+    <div className="flex flex-col h-screen max-w-4xl mx-auto bg-honey-50/30">
       {/* Header */}
-      <div className="border-b bg-white p-4 shadow-sm">
+      <div className="border-b border-honey-200 bg-white p-4 shadow-sm">
         <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold">Language Tutor</h1>
-            <p className="text-sm text-gray-600">Learning {language}</p>
+          <div className="flex items-center gap-3">
+            <div className="text-3xl">🐝</div>
+            <div>
+              <h1 className="text-2xl font-bold text-honey-800">Buzzling</h1>
+              <p className="text-sm text-honey-600">Learning {language}</p>
+            </div>
           </div>
           <select
             value={language}
             onChange={(e) => onLanguageChange(e.target.value as Language)}
-            className="px-3 py-2 border rounded-md bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="px-3 py-2 border border-honey-300 rounded-md bg-white hover:bg-honey-50 focus:outline-none focus:ring-2 focus:ring-honey-400 text-honey-800"
             disabled={messages.length > 0}
           >
-            <option value="German">German</option>
-            <option value="French">French</option>
-            <option value="Spanish">Spanish</option>
-            <option value="Italian">Italian</option>
-            <option value="Portuguese">Portuguese</option>
-            <option value="Japanese">Japanese</option>
-            <option value="Chinese">Chinese</option>
-            <option value="Korean">Korean</option>
+            {languages.map((lang) => (
+              <option key={lang} value={lang}>{lang}</option>
+            ))}
           </select>
         </div>
       </div>
@@ -122,9 +120,10 @@ export function Chat({ language, onLanguageChange }: ChatProps) {
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.length === 0 && !isLoading && (
-          <div className="text-center text-gray-500 mt-20">
-            <p className="text-lg mb-4">Welcome to Language Tutor!</p>
-            <p className="text-sm mb-6">
+          <div className="text-center text-honey-700 mt-20">
+            <div className="text-6xl mb-4">🐝</div>
+            <p className="text-xl font-semibold mb-2 text-honey-800">Welcome to Buzzling!</p>
+            <p className="text-sm mb-6 text-honey-600">
               Ready to start your {language} learning journey?
             </p>
             <div className="flex flex-col items-center gap-4">
@@ -134,12 +133,12 @@ export function Chat({ language, onLanguageChange }: ChatProps) {
                 onChange={(e) => setName(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleStart()}
                 placeholder="What is your name?"
-                className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-center"
+                className="px-4 py-2 border border-honey-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-honey-400 text-center bg-white"
               />
               <button
                 onClick={handleStart}
                 disabled={!name.trim()}
-                className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors font-medium"
+                className="px-6 py-3 bg-honey-500 text-white rounded-lg hover:bg-honey-600 disabled:bg-honey-200 disabled:text-honey-400 disabled:cursor-not-allowed transition-colors font-medium shadow-sm"
               >
                 Start Learning {language}
               </button>
@@ -155,8 +154,8 @@ export function Chat({ language, onLanguageChange }: ChatProps) {
             <div
               className={`max-w-2xl rounded-lg p-4 ${
                 message.role === 'user'
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-gray-100 text-gray-900'
+                  ? 'bg-honey-500 text-white'
+                  : 'bg-white border border-honey-200 text-honey-900 shadow-sm'
               }`}
             >
               {typeof message.content === 'string' ? (
@@ -171,7 +170,7 @@ export function Chat({ language, onLanguageChange }: ChatProps) {
         {/* Streaming response */}
         {isLoading && object && (
           <div className="flex justify-start">
-            <div className="max-w-2xl rounded-lg p-4 bg-gray-100 text-gray-900">
+            <div className="max-w-2xl rounded-lg p-4 bg-white border border-honey-200 text-honey-900 shadow-sm">
               <CorrectionDisplay correction={object} />
             </div>
           </div>
@@ -179,7 +178,7 @@ export function Chat({ language, onLanguageChange }: ChatProps) {
 
         {isLoading && !object && (
           <div className="flex justify-start">
-            <div className="max-w-2xl rounded-lg p-4 bg-gray-100 text-gray-500 italic">
+            <div className="max-w-2xl rounded-lg p-4 bg-white border border-honey-200 text-honey-500 italic shadow-sm">
               Thinking...
             </div>
           </div>
@@ -189,7 +188,7 @@ export function Chat({ language, onLanguageChange }: ChatProps) {
       </div>
 
       {/* Input */}
-      <div className="border-t bg-white p-4 shadow-sm">
+      <div className="border-t border-honey-200 bg-white p-4 shadow-sm">
         <ChatInput
           ref={inputRef}
           input={input}

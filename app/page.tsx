@@ -8,7 +8,7 @@ export default function Home() {
   const [language, setLanguage] = useState<Language>('German');
 
   return (
-    <main className="min-h-screen bg-gray-50">
+    <main className="min-h-screen bg-gradient-to-b from-honey-50 to-white">
       <Chat language={language} onLanguageChange={setLanguage} />
     </main>
   );

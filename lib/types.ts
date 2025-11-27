@@ -6,7 +6,7 @@ export const tutorResponseSchema = z.object({
       .describe('A brief message from the tutor to the student, e.g., encouraging them to keep going, giving them context on the corrections, or greeting them.'),
   englishSentence: z.string().describe('The original input text in English.'),
   submittedSentence: z.string().describe('The submitted input text in the target language.'),
-  correctedResponse: z.string().describe('The correct translation of the input text.'),
+  correctedResponse: z.string().describe('The correct translation of the input text. Only provide this if the user made an attempt at a translation.'),
   explanations: z.array(z
       .string()
       .max(200)
@@ -49,6 +49,8 @@ export const languages = [
   'Japanese',
   'Chinese',
   'Korean',
+  'Irish',
+  'Danish',
 ] as const;
 
 export type Language = typeof languages[number];

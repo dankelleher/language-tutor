@@ -1,12 +1,13 @@
 {
-  "name": "language-tutor",
+  "name": "buzzling",
   "version": "1.0.0",
-  "description": "An AI-powered language tutor web application using Next.js and Claude",
+  "description": "Buzzling - An AI-powered language learning companion",
   "type": "module",
   "main": "index.js",
   "scripts": {
     "dev": "next dev --turbopack -p 3300",
     "build": "next build",
+    "postinstall": "prisma generate",
     "start": "next start",
     "lint": "next lint",
     "cli": "tsx index.ts"
