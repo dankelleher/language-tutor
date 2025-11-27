@@ -2,12 +2,44 @@ import { streamObject, type ModelMessage } from 'ai';
 import { anthropic } from '@ai-sdk/anthropic';
 import { getSystemPrompt } from '@/lib/prompts';
 import { tutorResponseSchema, type Language } from '@/lib/types';
+import { auth } from '@/auth';
+import { prisma } from '@/lib/prisma';
 
 export const maxDuration = 30;
 
 export async function POST(req: Request) {
   try {
-    const { messages, language = 'German' } = await req.json();
+    const session = await auth();
+    const userId = session?.user?.id;
+
+    const { messages, language = 'German', sessionId } = await req.json();
+
+    // Get the latest user message (should be the last one)
+    const latestUserMessage = messages.filter((m: { role: string }) => m.role === 'user').pop();
+
+    // Save user message to database if authenticated
+    let chatSessionId = sessionId;
+    if (userId && latestUserMessage) {
+      // Create a new chat session if we don't have one
+      if (!chatSessionId) {
+        const chatSession = await prisma.chatSession.create({
+          data: {
+            userId,
+            language,
+          },
+        });
+        chatSessionId = chatSession.id;
+      }
+
+      // Save the user message
+      await prisma.chatMessage.create({
+        data: {
+          sessionId: chatSessionId,
+          role: 'user',
+          content: latestUserMessage.content,
+        },
+      });
+    }
 
     const modelMessages: ModelMessage[] = [
       { role: 'system', content: getSystemPrompt(language as Language) },
@@ -18,9 +50,34 @@ export async function POST(req: Request) {
       model: anthropic('claude-sonnet-4-5-20250929'),
       messages: modelMessages,
       schema: tutorResponseSchema,
+      onFinish: async ({ object }) => {
+        // Save assistant response to database if authenticated
+        if (userId && chatSessionId && object) {
+          await prisma.chatMessage.create({
+            data: {
+              sessionId: chatSessionId,
+              role: 'assistant',
+              content: JSON.stringify(object),
+            },
+          });
+
+          // Update session level if provided
+          if (object.progress?.evaluatedLevel) {
+            await prisma.chatSession.update({
+              where: { id: chatSessionId },
+              data: { level: object.progress.evaluatedLevel },
+            });
+          }
+        }
+      },
     });
 
-    return result.toTextStreamResponse();
+    // Include sessionId in response headers so frontend can track it
+    const response = result.toTextStreamResponse();
+    if (chatSessionId) {
+      response.headers.set('X-Chat-Session-Id', chatSessionId);
+    }
+    return response;
   } catch (error) {
     console.error('Chat API error:', error);
     return new Response(
