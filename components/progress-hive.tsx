@@ -41,10 +41,10 @@ export function ProgressHive({ currentLevel, stepsToNextLevel, compact = false }
                   w-6 h-7 flex items-center justify-start pl-1
                   clip-hexagon-half transition-all duration-500
                   ${isCompleted
-                    ? 'bg-gradient-to-r from-amber-400 to-amber-500 text-white'
+                    ? 'bg-gradient-to-r from-amber-400 to-amber-500 text-stone-900'
                     : isCurrentLevel
-                      ? 'bg-gradient-to-r from-amber-200 to-amber-300 text-amber-800'
-                      : 'bg-amber-100/80 text-amber-400'
+                      ? 'bg-gradient-to-r from-amber-300 to-amber-400 text-stone-800'
+                      : 'bg-amber-100/80 text-stone-400'
                   }
                 `}
               >
@@ -103,10 +103,10 @@ export function ProgressHive({ currentLevel, stepsToNextLevel, compact = false }
                 w-12 h-10 flex items-center justify-center
                 clip-hexagon transition-all duration-500
                 ${isCompleted
-                  ? 'bg-gradient-to-br from-amber-400 to-amber-500 text-white'
+                  ? 'bg-gradient-to-br from-amber-400 to-amber-500 text-stone-900'
                   : isCurrentLevel
-                    ? 'bg-gradient-to-br from-amber-200 to-amber-300 text-amber-800'
-                    : 'bg-amber-100/80 text-amber-400'
+                    ? 'bg-gradient-to-br from-amber-300 to-amber-400 text-stone-800'
+                    : 'bg-amber-100/80 text-stone-400'
                 }
               `}
             >
@@ -151,7 +151,7 @@ export function ProgressHive({ currentLevel, stepsToNextLevel, compact = false }
               />
             ))}
           </div>
-          <p className="text-[10px] text-amber-600 leading-tight">
+          <p className="text-[10px] text-amber-700 leading-tight">
             {stepsToNextLevel} step{stepsToNextLevel !== 1 ? 's' : ''} to
             <br />next level
           </p>

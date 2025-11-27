@@ -34,13 +34,13 @@ export const ChatInput = forwardRef<HTMLTextAreaElement, ChatInputProps>(
           onKeyDown={onKeyDown}
           placeholder={isLoading ? "Buzzing away..." : "Type your translation..."}
           disabled={isLoading}
-          className="flex-1 p-2 sm:p-3 text-sm sm:text-base bg-white rounded-2xl resize-none focus:outline-none focus:ring-2 focus:ring-amber-300 disabled:bg-amber-50 disabled:text-amber-400 min-h-[44px] max-h-[120px] placeholder:text-amber-400 text-amber-900 transition-colors"
+          className="flex-1 p-2 sm:p-3 text-sm sm:text-base bg-white rounded-2xl resize-none focus:outline-none focus:ring-2 focus:ring-amber-400 disabled:bg-amber-50 disabled:text-amber-400 min-h-[44px] max-h-[120px] placeholder:text-amber-400 text-amber-900 transition-colors"
           rows={1}
         />
         <button
           type="submit"
           disabled={isLoading || !input.trim()}
-          className="px-4 sm:px-6 py-2 sm:py-3 bg-honey-500 text-white rounded-full hover:bg-honey-600 disabled:bg-honey-200 disabled:text-honey-400 disabled:cursor-not-allowed transition-colors font-medium text-sm sm:text-base flex-shrink-0"
+          className="px-4 sm:px-6 py-2 sm:py-3 bg-amber-500 text-amber-950 font-semibold rounded-full hover:bg-amber-400 disabled:bg-amber-100 disabled:text-amber-400 disabled:cursor-not-allowed transition-colors text-sm sm:text-base flex-shrink-0"
         >
           {isLoading ? '...' : 'Send'}
         </button>

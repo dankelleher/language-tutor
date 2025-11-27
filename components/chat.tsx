@@ -186,8 +186,8 @@ export function Chat({ language, onLanguageChange }: ChatProps) {
             <div className="flex items-center gap-2 sm:gap-3 min-w-0">
               <Image src="/buzz-32.png" alt="Buzz" width={32} height={32} className="flex-shrink-0" />
               <div className="min-w-0">
-                <h1 className="text-lg sm:text-2xl font-bold text-stone-800 truncate">Buzzling</h1>
-                <p className="text-xs sm:text-sm text-stone-600 truncate">Learning {language}</p>
+                <h1 className="text-lg sm:text-2xl font-bold text-amber-900 truncate">Buzzling</h1>
+                <p className="text-xs sm:text-sm text-amber-700 truncate">Learning {language}</p>
               </div>
             </div>
             <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
@@ -220,8 +220,8 @@ export function Chat({ language, onLanguageChange }: ChatProps) {
                 className="absolute -top-2 -right-16 sm:-right-20"
               />
             </div>
-            <p className="text-xl font-semibold mb-2 text-stone-800">Welcome to the hive!</p>
-            <p className="text-sm mb-6 text-stone-600">
+            <p className="text-xl font-semibold mb-2 text-amber-900">Welcome to the hive!</p>
+            <p className="text-sm mb-6 text-amber-800">
               Let's pollinate your brain with some {language}!
             </p>
             <div className="flex flex-col items-center gap-4">
@@ -231,12 +231,12 @@ export function Chat({ language, onLanguageChange }: ChatProps) {
                 onChange={(e) => setName(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleStart()}
                 placeholder="What should we call you?"
-                className="px-4 py-2 rounded-full focus:outline-none focus:ring-2 focus:ring-amber-400 text-center bg-white placeholder:text-stone-400 text-stone-800"
+                className="px-4 py-2 rounded-full focus:outline-none focus:ring-2 focus:ring-amber-400 text-center bg-white placeholder:text-amber-400 text-amber-900"
               />
               <button
                 onClick={handleStart}
                 disabled={!name.trim()}
-                className="px-6 py-3 bg-amber-500 text-stone-900 font-semibold rounded-full hover:bg-amber-400 disabled:bg-amber-100 disabled:text-stone-400 disabled:cursor-not-allowed transition-colors"
+                className="px-6 py-3 bg-amber-500 text-amber-950 font-semibold rounded-full hover:bg-amber-400 disabled:bg-amber-100 disabled:text-amber-400 disabled:cursor-not-allowed transition-colors"
               >
                 Let's Buzz!
               </button>
@@ -252,8 +252,8 @@ export function Chat({ language, onLanguageChange }: ChatProps) {
             <div
               className={`max-w-[95%] sm:max-w-2xl rounded-2xl p-3 sm:p-4 ${
                 message.role === 'user'
-                  ? 'bg-amber-500 text-stone-900'
-                  : 'bg-white/90 text-stone-800'
+                  ? 'bg-amber-500 text-amber-950'
+                  : 'bg-white/90 text-amber-900'
               }`}
             >
               {typeof message.content === 'string' ? (
@@ -268,7 +268,7 @@ export function Chat({ language, onLanguageChange }: ChatProps) {
         {/* Streaming response */}
         {isLoading && object && (
           <div className="flex justify-start">
-            <div className="max-w-[95%] sm:max-w-2xl rounded-2xl p-3 sm:p-4 bg-white/90 text-stone-800">
+            <div className="max-w-[95%] sm:max-w-2xl rounded-2xl p-3 sm:p-4 bg-white/90 text-amber-900">
               <CorrectionDisplay correction={object} />
             </div>
           </div>
@@ -276,7 +276,7 @@ export function Chat({ language, onLanguageChange }: ChatProps) {
 
         {isLoading && !object && (
           <div className="flex justify-start">
-            <div className="max-w-[95%] sm:max-w-2xl rounded-2xl p-3 sm:p-4 bg-white/90 text-stone-500 italic text-sm sm:text-base">
+            <div className="max-w-[95%] sm:max-w-2xl rounded-2xl p-3 sm:p-4 bg-white/90 text-amber-600 italic text-sm sm:text-base">
               Buzzing away...
             </div>
           </div>
