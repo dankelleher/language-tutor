@@ -131,7 +131,7 @@ export function Chat({ language, onLanguageChange }: ChatProps) {
   };
 
   return (
-    <div className="flex h-[100dvh] bg-honey-50/30 overflow-hidden">
+    <div className="flex h-[100dvh] bg-gradient-to-b from-amber-50/30 to-white overflow-hidden">
       {/* Bee Celebration Overlay */}
       <BeeCelebration isActive={showCelebration} onComplete={handleCelebrationComplete} />
 
@@ -143,7 +143,7 @@ export function Chat({ language, onLanguageChange }: ChatProps) {
             <ProgressHive currentLevel={currentLevel} stepsToNextLevel={stepsToNextLevel} compact />
           </div>
           {/* Desktop: full sidebar */}
-          <div className="hidden sm:flex flex-col items-center border-r border-honey-200 bg-white/80 shadow-sm">
+          <div className="hidden sm:flex flex-col items-center bg-white/60 backdrop-blur-sm">
             <ProgressHive currentLevel={currentLevel} stepsToNextLevel={stepsToNextLevel} />
           </div>
         </>
@@ -152,7 +152,7 @@ export function Chat({ language, onLanguageChange }: ChatProps) {
       {/* Main content area */}
       <div className={`flex flex-col flex-1 w-full sm:max-w-4xl sm:mx-auto overflow-hidden ${messages.length > 0 ? 'pl-7 sm:pl-0' : ''}`}>
         {/* Header */}
-        <div className="flex-shrink-0 border-b border-honey-200 bg-white px-3 py-2 sm:p-4 shadow-sm">
+        <div className="flex-shrink-0 bg-white/80 backdrop-blur-sm px-3 py-2 sm:p-4">
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2 sm:gap-3 min-w-0">
               <Image src="/buzz-32.png" alt="Buzz" width={32} height={32} className="flex-shrink-0" />
@@ -165,7 +165,7 @@ export function Chat({ language, onLanguageChange }: ChatProps) {
               <select
                 value={language}
                 onChange={(e) => onLanguageChange(e.target.value as Language)}
-                className="px-2 py-1.5 sm:px-3 sm:py-2 text-sm border border-honey-300 rounded-md bg-white hover:bg-honey-50 focus:outline-none focus:ring-2 focus:ring-honey-400 text-honey-800"
+                className="px-2 py-1.5 sm:px-3 sm:py-2 text-sm rounded-full bg-honey-100/80 hover:bg-honey-200/80 focus:outline-none focus:ring-2 focus:ring-honey-300 text-honey-800 transition-colors"
                 disabled={messages.length > 0}
               >
                 {languages.map((lang) => (
@@ -202,12 +202,12 @@ export function Chat({ language, onLanguageChange }: ChatProps) {
                 onChange={(e) => setName(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleStart()}
                 placeholder="What should we call you?"
-                className="px-4 py-2 border border-honey-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-honey-400 text-center bg-white"
+                className="px-4 py-2 rounded-full focus:outline-none focus:ring-2 focus:ring-amber-300 text-center bg-white placeholder:text-amber-400 text-amber-900"
               />
               <button
                 onClick={handleStart}
                 disabled={!name.trim()}
-                className="px-6 py-3 bg-honey-500 text-white rounded-lg hover:bg-honey-600 disabled:bg-honey-200 disabled:text-honey-400 disabled:cursor-not-allowed transition-colors font-medium shadow-sm"
+                className="px-6 py-3 bg-honey-500 text-white rounded-full hover:bg-honey-600 disabled:bg-honey-200 disabled:text-honey-400 disabled:cursor-not-allowed transition-colors font-medium"
               >
                 Let's Buzz!
               </button>
@@ -221,10 +221,10 @@ export function Chat({ language, onLanguageChange }: ChatProps) {
             className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
           >
             <div
-              className={`max-w-[95%] sm:max-w-2xl rounded-lg p-3 sm:p-4 ${
+              className={`max-w-[95%] sm:max-w-2xl rounded-2xl p-3 sm:p-4 ${
                 message.role === 'user'
                   ? 'bg-honey-500 text-white'
-                  : 'bg-white border border-honey-200 text-honey-900 shadow-sm'
+                  : 'bg-white/90 text-honey-900'
               }`}
             >
               {typeof message.content === 'string' ? (
@@ -239,7 +239,7 @@ export function Chat({ language, onLanguageChange }: ChatProps) {
         {/* Streaming response */}
         {isLoading && object && (
           <div className="flex justify-start">
-            <div className="max-w-[95%] sm:max-w-2xl rounded-lg p-3 sm:p-4 bg-white border border-honey-200 text-honey-900 shadow-sm">
+            <div className="max-w-[95%] sm:max-w-2xl rounded-2xl p-3 sm:p-4 bg-white/90 text-honey-900">
               <CorrectionDisplay correction={object} />
             </div>
           </div>
@@ -247,7 +247,7 @@ export function Chat({ language, onLanguageChange }: ChatProps) {
 
         {isLoading && !object && (
           <div className="flex justify-start">
-            <div className="max-w-[95%] sm:max-w-2xl rounded-lg p-3 sm:p-4 bg-white border border-honey-200 text-honey-500 italic shadow-sm text-sm sm:text-base">
+            <div className="max-w-[95%] sm:max-w-2xl rounded-2xl p-3 sm:p-4 bg-white/90 text-honey-500 italic text-sm sm:text-base">
               Buzzing away...
             </div>
           </div>
@@ -257,7 +257,7 @@ export function Chat({ language, onLanguageChange }: ChatProps) {
       </div>
 
         {/* Input */}
-        <div className="flex-shrink-0 border-t border-honey-200 bg-white p-3 sm:p-4 shadow-sm pb-[max(1rem,env(safe-area-inset-bottom))]">
+        <div className="flex-shrink-0 bg-white/80 backdrop-blur-sm p-3 sm:p-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
           <ChatInput
             ref={inputRef}
             input={input}

@@ -24,8 +24,8 @@ export default function SignInPage() {
   };
 
   return (
-    <div className="min-h-[100dvh] flex items-center justify-center bg-gradient-to-b from-honey-50 to-white p-4">
-      <div className="max-w-md w-full p-6 sm:p-8 bg-white rounded-xl shadow-lg border border-honey-100">
+    <div className="min-h-[100dvh] flex items-center justify-center bg-gradient-to-b from-amber-50/50 to-white p-4">
+      <div className="max-w-md w-full p-6 sm:p-8 bg-white/80 backdrop-blur-sm rounded-3xl">
         <div className="text-center mb-6">
           <Image src="/buzz-64.png" alt="Buzz" width={64} height={64} className="mx-auto mb-3" />
           <h1 className="text-2xl font-bold text-honey-800">Buzzling</h1>
@@ -47,14 +47,14 @@ export default function SignInPage() {
               onInput={(e) => setEmail((e.target as HTMLInputElement).value)}
               placeholder="busy.bee@example.com"
               required
-              className="w-full px-4 py-2 border border-honey-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-honey-400 bg-white"
+              className="w-full px-4 py-2 rounded-full focus:outline-none focus:ring-2 focus:ring-amber-300 bg-amber-50/50 placeholder:text-amber-400"
             />
           </div>
 
           <button
             type="submit"
             disabled={isLoading || !email.trim()}
-            className="w-full py-2 px-4 bg-honey-500 text-white rounded-lg hover:bg-honey-600 disabled:bg-honey-200 disabled:text-honey-400 disabled:cursor-not-allowed transition-colors font-medium shadow-sm"
+            className="w-full py-2.5 px-4 bg-amber-500 text-white rounded-full hover:bg-amber-600 disabled:bg-amber-200 disabled:text-amber-400 disabled:cursor-not-allowed transition-colors font-medium"
           >
             {isLoading ? 'Sending...' : 'Send me a magic link'}
           </button>
@@ -65,11 +65,11 @@ export default function SignInPage() {
         </p>
 
         {isDev && (
-          <div className="mt-6 pt-4 border-t border-honey-200">
+          <div className="mt-6 pt-4">
             <button
               onClick={handleDevLogin}
               disabled={isLoading}
-              className="w-full py-2 px-4 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 disabled:opacity-50 transition-colors text-sm"
+              className="w-full py-2 px-4 bg-gray-100/80 text-gray-600 rounded-full hover:bg-gray-200/80 disabled:opacity-50 transition-colors text-sm"
             >
               Dev Login (localhost only)
             </button>

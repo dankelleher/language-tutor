@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
 import type { StreamingTutorResponse } from '@/lib/types';
 
 interface CorrectionDisplayProps {
@@ -88,7 +87,7 @@ const SentenceWithParts = ({ sentence, parts }: SentenceWithPartsProps) => {
         )
       )}
       {selectedPart && (
-        <span className="block mt-2 p-2 bg-honey-50 rounded text-xs border border-honey-200">
+        <span className="block mt-2 p-2 bg-honey-100/60 rounded-lg text-xs">
           <span className="font-semibold text-honey-700">{selectedPart.text}</span>
           {selectedPart.translation && (
             <span className="text-honey-600"> → {selectedPart.translation}</span>
@@ -128,7 +127,7 @@ export function CorrectionDisplay({ correction }: CorrectionDisplayProps) {
 
       {/* Submitted Translation */}
       {correction.submittedSentence && (
-        <div className={correction.chatMessage ? 'border-t pt-3 border-honey-200' : ''}>
+        <div className={correction.chatMessage ? 'pt-3' : ''}>
           <p className="text-xs font-semibold text-honey-600 mb-1">Your Translation:</p>
           <p className="text-sm italic">{correction.submittedSentence}</p>
         </div>
@@ -149,16 +148,14 @@ export function CorrectionDisplay({ correction }: CorrectionDisplayProps) {
           <div className="space-y-2">
             {correction.explanations.filter(Boolean).map((explanation, idx) => (
               <div key={idx} className="relative">
-                <Card
-                  className="bg-honey-50 border-honey-200 cursor-pointer transition-transform duration-200 hover:scale-[1.02]"
+                <div
+                  className="bg-honey-100/50 rounded-xl cursor-pointer transition-all duration-200 hover:bg-honey-100/80 p-3 pr-6"
                   onClick={() => setSelectedExplanation(selectedExplanation === idx ? null : idx)}
                 >
-                  <CardContent className="p-3 pr-6">
-                    <p className="text-sm">{explanation}</p>
-                  </CardContent>
-                </Card>
+                  <p className="text-sm">{explanation}</p>
+                </div>
                 <button
-                  className={`absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 px-4 py-2 text-sm font-medium text-honey-700 bg-honey-100 border border-honey-200 rounded-full hover:bg-honey-200 whitespace-nowrap shadow-sm transition-all duration-200 ${
+                  className={`absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 px-4 py-2 text-sm font-medium text-honey-700 bg-honey-200/80 rounded-full hover:bg-honey-300/80 whitespace-nowrap transition-all duration-200 ${
                     selectedExplanation === idx
                       ? 'opacity-100 scale-100'
                       : 'opacity-0 scale-90 pointer-events-none'
@@ -184,9 +181,9 @@ export function CorrectionDisplay({ correction }: CorrectionDisplayProps) {
 
       {/* Next Challenge */}
       {correction.nextExercise?.fullSentence && (
-        <div className="border-t pt-3 mt-3 border-honey-200">
+        <div className="pt-3 mt-3">
           <p className="text-xs font-semibold text-honey-700 mb-2">🎯 Next Challenge:</p>
-          <p className="text-sm font-medium bg-white/50 p-2 rounded">
+          <p className="text-sm font-medium bg-honey-50/50 p-3 rounded-xl">
             <SentenceWithParts
               sentence={correction.nextExercise.fullSentence}
               parts={correction.nextExercise.parts}

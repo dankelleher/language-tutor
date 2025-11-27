@@ -41,10 +41,10 @@ export function ProgressHive({ currentLevel, stepsToNextLevel, compact = false }
                   w-6 h-7 flex items-center justify-start pl-1
                   clip-hexagon-half transition-all duration-500
                   ${isCompleted
-                    ? 'bg-gradient-to-r from-honey-400 to-honey-500 text-white'
+                    ? 'bg-gradient-to-r from-amber-400 to-amber-500 text-white'
                     : isCurrentLevel
-                      ? 'bg-gradient-to-r from-honey-200 to-honey-300 text-honey-800'
-                      : 'bg-honey-100 text-honey-400'
+                      ? 'bg-gradient-to-r from-amber-200 to-amber-300 text-amber-800'
+                      : 'bg-amber-100/80 text-amber-400'
                   }
                 `}
               >
@@ -74,8 +74,8 @@ export function ProgressHive({ currentLevel, stepsToNextLevel, compact = false }
                   key={i}
                   className={`w-1 h-1 rounded-full transition-colors ${
                     i < (maxSteps - normalizedSteps)
-                      ? 'bg-honey-500'
-                      : 'bg-honey-200'
+                      ? 'bg-amber-500'
+                      : 'bg-amber-200'
                   }`}
                 />
               ))}
@@ -103,10 +103,10 @@ export function ProgressHive({ currentLevel, stepsToNextLevel, compact = false }
                 w-12 h-10 flex items-center justify-center
                 clip-hexagon transition-all duration-500
                 ${isCompleted
-                  ? 'bg-gradient-to-br from-honey-400 to-honey-500 text-white'
+                  ? 'bg-gradient-to-br from-amber-400 to-amber-500 text-white'
                   : isCurrentLevel
-                    ? 'bg-gradient-to-br from-honey-200 to-honey-300 text-honey-800 ring-2 ring-honey-500 ring-offset-1'
-                    : 'bg-honey-100 text-honey-400'
+                    ? 'bg-gradient-to-br from-amber-200 to-amber-300 text-amber-800'
+                    : 'bg-amber-100/80 text-amber-400'
                 }
               `}
             >
@@ -130,7 +130,7 @@ export function ProgressHive({ currentLevel, stepsToNextLevel, compact = false }
 
             {/* Honey drip for completed levels */}
             {isCompleted && (
-              <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-honey-400 rounded-full opacity-60" />
+              <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-amber-400 rounded-full opacity-60" />
             )}
           </div>
         );
@@ -145,13 +145,13 @@ export function ProgressHive({ currentLevel, stepsToNextLevel, compact = false }
                 key={i}
                 className={`w-1.5 h-1.5 rounded-full transition-colors ${
                   i < (maxSteps - normalizedSteps)
-                    ? 'bg-honey-500'
-                    : 'bg-honey-200'
+                    ? 'bg-amber-500'
+                    : 'bg-amber-200'
                 }`}
               />
             ))}
           </div>
-          <p className="text-[10px] text-honey-600 leading-tight">
+          <p className="text-[10px] text-amber-600 leading-tight">
             {stepsToNextLevel} step{stepsToNextLevel !== 1 ? 's' : ''} to
             <br />next level
           </p>
