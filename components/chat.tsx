@@ -29,6 +29,7 @@ export function Chat({ language, onLanguageChange }: ChatProps) {
   const [stepsToNextLevel, setStepsToNextLevel] = useState<number | null>(null);
   const [showCelebration, setShowCelebration] = useState(false);
   const [chatSessionId, setChatSessionId] = useState<string | null>(null);
+  const [isLoadingHistory, setIsLoadingHistory] = useState(true);
 
   const { object, submit, isLoading } = useObject({
     api: '/api/chat',
@@ -46,6 +47,34 @@ export function Chat({ language, onLanguageChange }: ChatProps) {
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+
+  // Load chat history on mount
+  useEffect(() => {
+    const loadHistory = async () => {
+      try {
+        const response = await fetch('/api/chat/history');
+        const data = await response.json();
+
+        if (data.session && data.messages.length > 0) {
+          setChatSessionId(data.session.id);
+          setMessages(data.messages);
+          if (data.session.level) {
+            setCurrentLevel(data.session.level);
+          }
+          // Update language if different
+          if (data.session.language && data.session.language !== language) {
+            onLanguageChange(data.session.language as Language);
+          }
+        }
+      } catch (error) {
+        console.error('Failed to load chat history:', error);
+      } finally {
+        setIsLoadingHistory(false);
+      }
+    };
+
+    loadHistory();
+  }, []);
 
   // Focus input when loading finishes
   useEffect(() => {
@@ -157,15 +186,15 @@ export function Chat({ language, onLanguageChange }: ChatProps) {
             <div className="flex items-center gap-2 sm:gap-3 min-w-0">
               <Image src="/buzz-32.png" alt="Buzz" width={32} height={32} className="flex-shrink-0" />
               <div className="min-w-0">
-                <h1 className="text-lg sm:text-2xl font-bold text-honey-800 truncate">Buzzling</h1>
-                <p className="text-xs sm:text-sm text-honey-600 truncate">Learning {language}</p>
+                <h1 className="text-lg sm:text-2xl font-bold text-stone-800 truncate">Buzzling</h1>
+                <p className="text-xs sm:text-sm text-stone-600 truncate">Learning {language}</p>
               </div>
             </div>
             <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
               <select
                 value={language}
                 onChange={(e) => onLanguageChange(e.target.value as Language)}
-                className="px-2 py-1.5 sm:px-3 sm:py-2 text-sm rounded-full bg-honey-100/80 hover:bg-honey-200/80 focus:outline-none focus:ring-2 focus:ring-honey-300 text-honey-800 transition-colors"
+                className="px-2 py-1.5 sm:px-3 sm:py-2 text-sm rounded-full bg-amber-100 hover:bg-amber-200 focus:outline-none focus:ring-2 focus:ring-amber-400 text-stone-700 transition-colors"
                 disabled={messages.length > 0}
               >
                 {languages.map((lang) => (
@@ -179,8 +208,8 @@ export function Chat({ language, onLanguageChange }: ChatProps) {
 
         {/* Messages */}
         <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-3 sm:space-y-4">
-        {messages.length === 0 && !isLoading && (
-          <div className="text-center text-honey-700 mt-20">
+        {messages.length === 0 && !isLoading && !isLoadingHistory && (
+          <div className="text-center mt-20">
             <div className="relative inline-block mb-4">
               <Image src="/buzz-128.png" alt="Buzz" width={128} height={128} className="mx-auto" />
               <Image
@@ -191,8 +220,8 @@ export function Chat({ language, onLanguageChange }: ChatProps) {
                 className="absolute -top-2 -right-16 sm:-right-20"
               />
             </div>
-            <p className="text-xl font-semibold mb-2 text-honey-800">Welcome to the hive!</p>
-            <p className="text-sm mb-6 text-honey-600">
+            <p className="text-xl font-semibold mb-2 text-stone-800">Welcome to the hive!</p>
+            <p className="text-sm mb-6 text-stone-600">
               Let's pollinate your brain with some {language}!
             </p>
             <div className="flex flex-col items-center gap-4">
@@ -202,12 +231,12 @@ export function Chat({ language, onLanguageChange }: ChatProps) {
                 onChange={(e) => setName(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleStart()}
                 placeholder="What should we call you?"
-                className="px-4 py-2 rounded-full focus:outline-none focus:ring-2 focus:ring-amber-300 text-center bg-white placeholder:text-amber-400 text-amber-900"
+                className="px-4 py-2 rounded-full focus:outline-none focus:ring-2 focus:ring-amber-400 text-center bg-white placeholder:text-stone-400 text-stone-800"
               />
               <button
                 onClick={handleStart}
                 disabled={!name.trim()}
-                className="px-6 py-3 bg-honey-500 text-white rounded-full hover:bg-honey-600 disabled:bg-honey-200 disabled:text-honey-400 disabled:cursor-not-allowed transition-colors font-medium"
+                className="px-6 py-3 bg-amber-500 text-stone-900 font-semibold rounded-full hover:bg-amber-400 disabled:bg-amber-100 disabled:text-stone-400 disabled:cursor-not-allowed transition-colors"
               >
                 Let's Buzz!
               </button>
@@ -223,8 +252,8 @@ export function Chat({ language, onLanguageChange }: ChatProps) {
             <div
               className={`max-w-[95%] sm:max-w-2xl rounded-2xl p-3 sm:p-4 ${
                 message.role === 'user'
-                  ? 'bg-honey-500 text-white'
-                  : 'bg-white/90 text-honey-900'
+                  ? 'bg-amber-500 text-stone-900'
+                  : 'bg-white/90 text-stone-800'
               }`}
             >
               {typeof message.content === 'string' ? (
@@ -239,7 +268,7 @@ export function Chat({ language, onLanguageChange }: ChatProps) {
         {/* Streaming response */}
         {isLoading && object && (
           <div className="flex justify-start">
-            <div className="max-w-[95%] sm:max-w-2xl rounded-2xl p-3 sm:p-4 bg-white/90 text-honey-900">
+            <div className="max-w-[95%] sm:max-w-2xl rounded-2xl p-3 sm:p-4 bg-white/90 text-stone-800">
               <CorrectionDisplay correction={object} />
             </div>
           </div>
@@ -247,7 +276,7 @@ export function Chat({ language, onLanguageChange }: ChatProps) {
 
         {isLoading && !object && (
           <div className="flex justify-start">
-            <div className="max-w-[95%] sm:max-w-2xl rounded-2xl p-3 sm:p-4 bg-white/90 text-honey-500 italic text-sm sm:text-base">
+            <div className="max-w-[95%] sm:max-w-2xl rounded-2xl p-3 sm:p-4 bg-white/90 text-stone-500 italic text-sm sm:text-base">
               Buzzing away...
             </div>
           </div>
