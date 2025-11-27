@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { signIn } from 'next-auth/react';
 
 const isDev = process.env.NODE_ENV === 'development';
@@ -26,7 +27,7 @@ export default function SignInPage() {
     <div className="min-h-[100dvh] flex items-center justify-center bg-gradient-to-b from-honey-50 to-white p-4">
       <div className="max-w-md w-full p-6 sm:p-8 bg-white rounded-xl shadow-lg border border-honey-100">
         <div className="text-center mb-6">
-          <div className="text-5xl mb-3">🐝</div>
+          <Image src="/buzz-64.png" alt="Buzz" width={64} height={64} className="mx-auto mb-3" />
           <h1 className="text-2xl font-bold text-honey-800">Buzzling</h1>
           <p className="text-honey-600 mt-1">
             Join the hive and start learning!

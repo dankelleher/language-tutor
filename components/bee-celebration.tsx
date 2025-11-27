@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 
 interface Bee {
   id: number;
@@ -65,7 +66,7 @@ export function BeeCelebration({ isActive, onComplete }: BeeCelebrationProps) {
             '--bee-rotate': `${bee.rotation + (Math.random() - 0.5) * 720}deg`,
           } as React.CSSProperties}
         >
-          🐝
+          <Image src="/buzz-32.png" alt="Buzz" width={32} height={32} />
         </div>
       ))}
 

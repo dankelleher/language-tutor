@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState, useCallback } from 'react';
+import Image from 'next/image';
 import { experimental_useObject as useObject } from '@ai-sdk/react';
 import { ChatInput } from './chat-input';
 import { CorrectionDisplay } from './correction-display';
@@ -27,10 +28,20 @@ export function Chat({ language, onLanguageChange }: ChatProps) {
   const [currentLevel, setCurrentLevel] = useState<string | null>(null);
   const [stepsToNextLevel, setStepsToNextLevel] = useState<number | null>(null);
   const [showCelebration, setShowCelebration] = useState(false);
+  const [chatSessionId, setChatSessionId] = useState<string | null>(null);
 
   const { object, submit, isLoading } = useObject({
     api: '/api/chat',
     schema: tutorResponseSchema,
+    fetch: async (url, options) => {
+      const response = await fetch(url, options);
+      // Extract session ID from response header
+      const sessionId = response.headers.get('X-Chat-Session-Id');
+      if (sessionId && !chatSessionId) {
+        setChatSessionId(sessionId);
+      }
+      return response;
+    },
   });
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -109,7 +120,7 @@ export function Chat({ language, onLanguageChange }: ChatProps) {
       }));
 
       // Submit to API
-      submit({ messages: apiMessages, language });
+      submit({ messages: apiMessages, language, sessionId: chatSessionId });
       if (!text) setInput('');
     }
   };
@@ -144,7 +155,7 @@ export function Chat({ language, onLanguageChange }: ChatProps) {
         <div className="flex-shrink-0 border-b border-honey-200 bg-white px-3 py-2 sm:p-4 shadow-sm">
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-              <div className="text-2xl sm:text-3xl flex-shrink-0">🐝</div>
+              <Image src="/buzz-32.png" alt="Buzz" width={32} height={32} className="flex-shrink-0" />
               <div className="min-w-0">
                 <h1 className="text-lg sm:text-2xl font-bold text-honey-800 truncate">Buzzling</h1>
                 <p className="text-xs sm:text-sm text-honey-600 truncate">Learning {language}</p>
@@ -170,7 +181,7 @@ export function Chat({ language, onLanguageChange }: ChatProps) {
         <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-3 sm:space-y-4">
         {messages.length === 0 && !isLoading && (
           <div className="text-center text-honey-700 mt-20">
-            <div className="text-6xl mb-4">🐝</div>
+            <Image src="/buzz-128.png" alt="Buzz" width={128} height={128} className="mb-4 mx-auto" />
             <p className="text-xl font-semibold mb-2 text-honey-800">Welcome to the hive!</p>
             <p className="text-sm mb-6 text-honey-600">
               Let's pollinate your brain with some {language}!
@@ -189,7 +200,7 @@ export function Chat({ language, onLanguageChange }: ChatProps) {
                 disabled={!name.trim()}
                 className="px-6 py-3 bg-honey-500 text-white rounded-lg hover:bg-honey-600 disabled:bg-honey-200 disabled:text-honey-400 disabled:cursor-not-allowed transition-colors font-medium shadow-sm"
               >
-                Let's Buzz! 🐝
+                Let's Buzz!
               </button>
             </div>
           </div>

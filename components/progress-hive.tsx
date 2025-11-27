@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { CEFR_LEVELS, getLevelIndex } from '@/lib/types';
 
 interface ProgressHiveProps {
@@ -57,7 +58,7 @@ export function ProgressHive({ currentLevel, stepsToNextLevel, compact = false }
                 <div
                   className="absolute -top-3 left-1/2 -translate-x-1/2 transition-all duration-700 ease-out"
                 >
-                  <span className="text-sm animate-bounce-gentle block">🐝</span>
+                  <Image src="/buzz-16.png" alt="Buzz" width={16} height={16} className="animate-bounce-gentle" />
                 </div>
               )}
             </div>
@@ -123,7 +124,7 @@ export function ProgressHive({ currentLevel, stepsToNextLevel, compact = false }
                   transform: 'translateY(-50%)'
                 }}
               >
-                <span className="text-lg animate-bounce-gentle">🐝</span>
+                <Image src="/buzz-32.png" alt="Buzz" width={24} height={24} className="animate-bounce-gentle" />
               </div>
             )}
 
