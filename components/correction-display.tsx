@@ -173,11 +173,11 @@ export function CorrectionDisplay({ correction }: CorrectionDisplayProps) {
       )}
 
       {/* Level Assessment */}
-      {correction.evaluatedLevel && (
+      {correction.progress?.evaluatedLevel && (
         <div className="flex items-center gap-2">
           <p className="text-xs font-semibold text-honey-600">Current Level:</p>
           <span className="text-xs px-2 py-1 bg-honey-100 text-honey-800 rounded-full font-medium">
-            {correction.evaluatedLevel}
+            {correction.progress.evaluatedLevel}
           </span>
         </div>
       )}

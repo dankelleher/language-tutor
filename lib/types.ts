@@ -19,7 +19,10 @@ export const tutorResponseSchema = z.object({
           notes: z.string().describe('Any notes or explanations about this part, e.g., grammar points, vocabulary tips, etc.'),
       })),
   }),
-  evaluatedLevel: z.string().describe('The evaluated language level of the student (A1-C2).'),
+  progress: z.object({
+      evaluatedLevel: z.string().describe('The evaluated language level of the student (A1-C2).'),
+      stepsToNextLevel: z.number().describe('The number of exercises or steps the student needs to complete to reach the next language level. Keep this small at first, e.g., 3-5 steps, depending on how the student does.'),
+  }),
 });
 
 export type TutorResponse = z.infer<typeof tutorResponseSchema>;
@@ -37,7 +40,21 @@ export type StreamingTutorResponse = {
     fullSentence?: string;
     parts?: (Partial<ExercisePart> | undefined)[];
   };
-  evaluatedLevel?: string;
+  progress?: {
+    evaluatedLevel?: string;
+    stepsToNextLevel?: number;
+  };
+};
+
+export const CEFR_LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'] as const;
+export type CEFRLevel = typeof CEFR_LEVELS[number];
+
+/**
+ * Get the index of a CEFR level (0-5), or -1 if not found
+ */
+export const getLevelIndex = (level: string): number => {
+  const normalized = level.toUpperCase().trim();
+  return CEFR_LEVELS.indexOf(normalized as CEFRLevel);
 };
 
 export const languages = [
