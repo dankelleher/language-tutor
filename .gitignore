@@ -36,3 +36,10 @@ yarn-error.log*
 
 # Vercel
 .vercel
+
+# Database
+*.db
+*.db-journal
+
+# Generated
+generated/
