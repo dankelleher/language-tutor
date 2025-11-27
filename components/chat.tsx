@@ -139,7 +139,7 @@ export function Chat({ language, onLanguageChange }: ChatProps) {
       )}
 
       {/* Main content area */}
-      <div className="flex flex-col flex-1 max-w-4xl mx-auto overflow-hidden">
+      <div className={`flex flex-col flex-1 max-w-4xl mx-auto overflow-hidden ${messages.length > 0 ? 'pl-7 sm:pl-0' : ''}`}>
         {/* Header */}
         <div className="flex-shrink-0 border-b border-honey-200 bg-white px-3 py-2 sm:p-4 shadow-sm">
           <div className="flex items-center justify-between gap-2">
