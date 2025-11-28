@@ -232,7 +232,7 @@ export function Chat({ language, onLanguageChange }: ChatProps) {
                   onChange={(e) => setName(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleStart()}
                   placeholder="What should we call you?"
-                  className="px-4 py-2 rounded-full focus:outline-none focus:ring-2 focus:ring-amber-400 text-center bg-white placeholder:text-amber-600 text-amber-900 border border-amber-200"
+                  className="px-4 py-2 rounded-full focus:outline-none focus:ring-2 focus:ring-amber-400 text-center text-base bg-white placeholder:text-amber-600 text-amber-900 border border-amber-200"
                 />
                 <button
                   onClick={handleStart}

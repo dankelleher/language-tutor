@@ -34,7 +34,7 @@ export const ChatInput = forwardRef<HTMLTextAreaElement, ChatInputProps>(
           onKeyDown={onKeyDown}
           placeholder={isLoading ? "Buzzing away..." : "Type your translation..."}
           disabled={isLoading}
-          className="flex-1 p-2 sm:p-3 text-sm sm:text-base bg-white rounded-2xl resize-none focus:outline-none focus:ring-2 focus:ring-amber-400 disabled:bg-amber-50 disabled:text-amber-400 min-h-[44px] max-h-[120px] placeholder:text-amber-400 text-amber-900 transition-colors"
+          className="flex-1 p-2 sm:p-3 text-base bg-white rounded-2xl resize-none focus:outline-none focus:ring-2 focus:ring-amber-400 disabled:bg-amber-50 disabled:text-amber-400 min-h-[44px] max-h-[120px] placeholder:text-amber-400 text-amber-900 transition-colors"
           rows={1}
         />
         <button
