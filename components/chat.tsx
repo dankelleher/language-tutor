@@ -58,8 +58,8 @@ export function Chat({ language, onLanguageChange }: ChatProps) {
         if (data.session && data.messages.length > 0) {
           setChatSessionId(data.session.id);
           setMessages(data.messages);
-          if (data.session.level) {
-            setCurrentLevel(data.session.level);
+          if (data.session.level?.overallLevel) {
+            setCurrentLevel(data.session.level.overallLevel);
           }
           // Update language if different
           if (data.session.language && data.session.language !== language) {
@@ -90,8 +90,8 @@ export function Chat({ language, onLanguageChange }: ChatProps) {
 
   // Check for level up when streaming completes
   useEffect(() => {
-    if (!isLoading && object?.progress?.evaluatedLevel) {
-      const newLevel = object.progress.evaluatedLevel;
+    if (!isLoading && object?.progress?.overallLevel) {
+      const newLevel = object.progress.overallLevel;
       const newLevelIndex = getLevelIndex(newLevel);
       const currentLevelIndex = currentLevel ? getLevelIndex(currentLevel) : -1;
 
@@ -103,7 +103,7 @@ export function Chat({ language, onLanguageChange }: ChatProps) {
       setCurrentLevel(newLevel);
       setStepsToNextLevel(object.progress.stepsToNextLevel ?? null);
     }
-  }, [isLoading, object?.progress?.evaluatedLevel, object?.progress?.stepsToNextLevel, currentLevel]);
+  }, [isLoading, object?.progress?.overallLevel, object?.progress?.stepsToNextLevel, currentLevel]);
 
   const handleCelebrationComplete = useCallback(() => {
     setShowCelebration(false);

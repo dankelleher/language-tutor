@@ -79,10 +79,15 @@ export async function POST(req: Request) {
           });
 
           // Update session level if provided
-          if (object.progress?.evaluatedLevel) {
+          if (object.progress?.overallLevel) {
             await prisma.chatSession.update({
               where: { id: chatSessionId },
-              data: { level: object.progress.evaluatedLevel },
+              data: {
+                level: {
+                  overallLevel: object.progress.overallLevel,
+                  categoryLevels: object.progress.categoryLevels,
+                },
+              },
             });
           }
         }

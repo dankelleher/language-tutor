@@ -201,11 +201,11 @@ export function CorrectionDisplay({ correction, isLatest = false }: CorrectionDi
       )}
 
       {/* Level Progress - Subtle Footer */}
-      {correction.progress?.evaluatedLevel && (
+      {correction.progress?.overallLevel && (
         <div className="flex items-center justify-center gap-3 pt-2">
           <span className="text-xs text-amber-600">Current Level</span>
           <span className="px-3 py-1 bg-amber-400/80 text-amber-900 rounded-full text-sm font-bold">
-            {correction.progress.evaluatedLevel}
+            {correction.progress.overallLevel}
           </span>
           {correction.progress.stepsToNextLevel !== undefined && correction.progress.stepsToNextLevel > 0 && (
             <span className="text-xs text-amber-600">

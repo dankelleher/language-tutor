@@ -1,5 +1,43 @@
 import { z } from 'zod';
 
+export const CEFR_LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'] as const;
+export type CEFRLevel = typeof CEFR_LEVELS[number];
+
+export const SKILL_CATEGORIES = {
+  vocabulary: {
+    id: 'vocabulary',
+    name: 'Vocabulary',
+    description: 'Word knowledge, synonyms, idiomatic expressions',
+  },
+  grammar: {
+    id: 'grammar',
+    name: 'Grammar',
+    description: 'Sentence structure, word order, agreement rules',
+  },
+  tenses: {
+    id: 'tenses',
+    name: 'Verb Tenses',
+    description: 'Past, present, future, perfect, conditional forms',
+  },
+  conversation: {
+    id: 'conversation',
+    name: 'Conversation',
+    description: 'Natural phrasing, idioms, register, conversational fluency',
+  },
+} as const;
+
+export type SkillCategoryId = keyof typeof SKILL_CATEGORIES;
+export const SKILL_CATEGORY_IDS = Object.keys(SKILL_CATEGORIES) as SkillCategoryId[];
+
+export const categoryLevelSchema = z.object({
+  category: z.enum(['vocabulary', 'grammar', 'tenses', 'conversation'])
+    .describe('The skill category being evaluated'),
+  level: z.enum(['A1', 'A2', 'B1', 'B2', 'C1', 'C2'])
+    .describe('The CEFR level for this category'),
+});
+
+export type CategoryLevel = z.infer<typeof categoryLevelSchema>;
+
 export const tutorResponseSchema = z.object({
   chatMessage: z.string()
       .max(100)
@@ -20,7 +58,10 @@ export const tutorResponseSchema = z.object({
       })),
   }),
   progress: z.object({
-      evaluatedLevel: z.string().describe('The evaluated language level of the student (A1-C2).'),
+      overallLevel: z.enum(['A1', 'A2', 'B1', 'B2', 'C1', 'C2'])
+        .describe('The overall evaluated language level of the student, derived from their component levels.'),
+      categoryLevels: z.array(categoryLevelSchema)
+        .describe('Individual skill levels for each category: vocabulary, grammar, tenses, conversation. Evaluate all four categories.'),
       stepsToNextLevel: z.number().describe('The number of exercises or steps the student needs to complete to reach the next language level. Keep this small at first, e.g., 3-5 steps, depending on how the student does.'),
   }),
 });
@@ -41,13 +82,11 @@ export type StreamingTutorResponse = {
     parts?: (Partial<ExercisePart> | undefined)[];
   };
   progress?: {
-    evaluatedLevel?: string;
+    overallLevel?: CEFRLevel;
+    categoryLevels?: (Partial<CategoryLevel> | undefined)[];
     stepsToNextLevel?: number;
   };
 };
-
-export const CEFR_LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'] as const;
-export type CEFRLevel = typeof CEFR_LEVELS[number];
 
 /**
  * Get the index of a CEFR level (0-5), or -1 if not found
