@@ -1,10 +1,12 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import Image from 'next/image';
 import type { StreamingTutorResponse } from '@/lib/types';
 
 interface CorrectionDisplayProps {
   correction: StreamingTutorResponse;
+  isLatest?: boolean;
 }
 
 type PartInfo = {
@@ -32,7 +34,6 @@ const parseSentenceWithParts = (sentence: string, parts?: (Partial<PartInfo> | u
 
   const segments: SentenceSegment[] = [];
   let remaining = sentence;
-  let position = 0;
 
   while (remaining.length > 0) {
     let earliestMatch: { index: number; part: PartInfo } | null = null;
@@ -59,7 +60,6 @@ const parseSentenceWithParts = (sentence: string, parts?: (Partial<PartInfo> | u
     });
 
     remaining = remaining.slice(earliestMatch.index + earliestMatch.part.text.length);
-    position += earliestMatch.index + earliestMatch.part.text.length;
   }
 
   return segments;
@@ -70,45 +70,47 @@ const SentenceWithParts = ({ sentence, parts }: SentenceWithPartsProps) => {
   const segments = parseSentenceWithParts(sentence, parts);
 
   return (
-    <span>
-      {segments.map((segment, idx) =>
-        segment.part ? (
-          <button
-            key={idx}
-            onClick={() => setSelectedPart(selectedPart === segment.part ? null : segment.part!)}
-            className={`underline decoration-amber-500 decoration-2 underline-offset-2 hover:bg-amber-100 rounded px-0.5 transition-colors ${
-              selectedPart === segment.part ? 'bg-amber-200' : ''
-            }`}
-          >
-            {segment.text}
-          </button>
-        ) : (
-          <span key={idx}>{segment.text}</span>
-        )
-      )}
+    <div>
+      <p className="text-lg sm:text-xl font-bold text-amber-950 leading-relaxed">
+        {segments.map((segment, idx) =>
+          segment.part ? (
+            <button
+              key={idx}
+              onClick={() => setSelectedPart(selectedPart === segment.part ? null : segment.part!)}
+              className={`underline decoration-amber-800 decoration-2 underline-offset-4 hover:bg-amber-300/50 rounded px-0.5 transition-colors ${
+                selectedPart === segment.part ? 'bg-amber-300/70' : ''
+              }`}
+            >
+              {segment.text}
+            </button>
+          ) : (
+            <span key={idx}>{segment.text}</span>
+          )
+        )}
+      </p>
       {selectedPart && (
-        <span className="block mt-2 p-2 bg-amber-100/60 rounded-lg text-xs">
-          <span className="font-semibold text-amber-900">{selectedPart.text}</span>
+        <div className="mt-4 p-3 bg-amber-950/20 rounded-xl">
+          <p className="font-bold text-amber-950">{selectedPart.text}</p>
           {selectedPart.translation && (
-            <span className="text-amber-700"> → {selectedPart.translation}</span>
+            <p className="text-amber-950 mt-1 font-medium">→ {selectedPart.translation}</p>
           )}
           {selectedPart.notes && (
-            <span className="block mt-1 text-amber-800">{selectedPart.notes}</span>
+            <p className="text-amber-900 mt-2 text-sm">{selectedPart.notes}</p>
           )}
-        </span>
+        </div>
       )}
-    </span>
+    </div>
   );
 };
 
-export function CorrectionDisplay({ correction }: CorrectionDisplayProps) {
-  const [selectedExplanation, setSelectedExplanation] = useState<number | null>(null);
-  const explanationsRef = useRef<HTMLDivElement>(null);
+export function CorrectionDisplay({ correction, isLatest = false }: CorrectionDisplayProps) {
+  const [expandedExplanation, setExpandedExplanation] = useState<number | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (explanationsRef.current && !explanationsRef.current.contains(event.target as Node)) {
-        setSelectedExplanation(null);
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        setExpandedExplanation(null);
       }
     };
 
@@ -118,77 +120,98 @@ export function CorrectionDisplay({ correction }: CorrectionDisplayProps) {
 
   if (!correction) return null;
 
+  const hasCorrection = correction.submittedSentence || correction.correctedResponse;
+  const hasExplanations = correction.explanations && correction.explanations.filter(Boolean).length > 0;
+  const hasNextExercise = correction.nextExercise?.fullSentence;
+
   return (
-    <div className="space-y-3">
-      {/* Chat Message from Tutor */}
+    <div ref={containerRef} className="space-y-6">
+      {/* Hero Section - Chat Message */}
       {correction.chatMessage && (
-        <p className="text-sm">{correction.chatMessage}</p>
-      )}
-
-      {/* Submitted Translation */}
-      {correction.submittedSentence && (
-        <div className={correction.chatMessage ? 'pt-3' : ''}>
-          <p className="text-xs font-semibold text-amber-700 mb-1">Your Translation:</p>
-          <p className="text-sm italic">{correction.submittedSentence}</p>
-        </div>
-      )}
-
-      {/* Correct Translation */}
-      {correction.correctedResponse && (
-        <div>
-          <p className="text-xs font-semibold text-green-700 mb-1">✓ Correct Translation:</p>
-          <p className="text-sm font-medium">{correction.correctedResponse}</p>
-        </div>
-      )}
-
-      {/* Explanations */}
-      {correction.explanations && correction.explanations.filter(Boolean).length > 0 && (
-        <div ref={explanationsRef}>
-          <p className="text-xs font-semibold text-amber-800 mb-2">💡 Explanations:</p>
-          <div className="space-y-2">
-            {correction.explanations.filter(Boolean).map((explanation, idx) => (
-              <div key={idx} className="relative">
-                <div
-                  className="bg-amber-100/50 rounded-xl cursor-pointer transition-all duration-200 hover:bg-amber-100/80 p-3 pr-6"
-                  onClick={() => setSelectedExplanation(selectedExplanation === idx ? null : idx)}
-                >
-                  <p className="text-sm">{explanation}</p>
-                </div>
-                <button
-                  className={`absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 px-4 py-2 text-sm font-semibold text-amber-900 bg-amber-400 rounded-full hover:bg-amber-300 whitespace-nowrap transition-all duration-200 ${
-                    selectedExplanation === idx
-                      ? 'opacity-100 scale-100'
-                      : 'opacity-0 scale-90 pointer-events-none'
-                  }`}
-                >
-                  Learn more &gt;
-                </button>
-              </div>
-            ))}
+        <div className="text-center">
+          <div className="inline-flex items-center gap-3 bg-white/80 backdrop-blur-sm rounded-full px-5 py-3 shadow-sm">
+            <Image src="/buzz-32.png" alt="Buzz" width={32} height={32} />
+            <p className="text-amber-900 font-medium">{correction.chatMessage}</p>
           </div>
         </div>
       )}
 
-      {/* Level Assessment */}
-      {correction.progress?.evaluatedLevel && (
-        <div className="flex items-center gap-2">
-          <p className="text-xs font-semibold text-amber-700">Current Level:</p>
-          <span className="text-xs px-2 py-1 bg-amber-400 text-amber-900 rounded-full font-semibold">
-            {correction.progress.evaluatedLevel}
-          </span>
+      {/* Correction Section */}
+      {hasCorrection && (
+        <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-5 sm:p-6 space-y-4">
+          {correction.submittedSentence && (
+            <div>
+              <p className="text-xs font-semibold text-amber-600 uppercase tracking-wide mb-2">Your attempt</p>
+              <p className="text-amber-800 italic">{correction.submittedSentence}</p>
+            </div>
+          )}
+
+          {correction.correctedResponse && (
+            <div className="pt-3 border-t border-amber-100">
+              <p className="text-xs font-semibold text-green-700 uppercase tracking-wide mb-2 flex items-center gap-1">
+                <span className="text-base">✓</span> Correct version
+              </p>
+              <p className="text-amber-900 font-medium text-lg">{correction.correctedResponse}</p>
+            </div>
+          )}
         </div>
       )}
 
-      {/* Next Challenge */}
-      {correction.nextExercise?.fullSentence && (
-        <div className="pt-3 mt-3">
-          <p className="text-xs font-semibold text-amber-800 mb-2">🎯 Next Challenge:</p>
-          <p className="text-sm font-medium bg-amber-50/50 p-3 rounded-xl">
-            <SentenceWithParts
-              sentence={correction.nextExercise.fullSentence}
-              parts={correction.nextExercise.parts}
-            />
+      {/* Explanations Section */}
+      {hasExplanations && (
+        <div className="space-y-2">
+          <p className="text-xs font-semibold text-amber-700 uppercase tracking-wide px-1">Tips & Explanations</p>
+          <div className="flex flex-wrap gap-2">
+            {correction.explanations?.filter(Boolean).map((explanation, idx) => (
+              <button
+                key={idx}
+                onClick={() => setExpandedExplanation(expandedExplanation === idx ? null : idx)}
+                className={`px-4 py-2 rounded-full text-sm transition-all ${
+                  expandedExplanation === idx
+                    ? 'bg-amber-500 text-amber-950'
+                    : 'bg-amber-100/80 text-amber-800 hover:bg-amber-200/80'
+                }`}
+              >
+                💡 Tip {idx + 1}
+              </button>
+            ))}
+          </div>
+          {expandedExplanation !== null && correction.explanations?.[expandedExplanation] && (
+            <div className="bg-amber-50/80 rounded-2xl p-4 mt-2">
+              <p className="text-amber-900">{correction.explanations[expandedExplanation]}</p>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Next Challenge Section - Prominent Card */}
+      {hasNextExercise && (
+        <div className="bg-gradient-to-br from-amber-400 to-amber-500 rounded-3xl p-5 sm:p-6 shadow-lg">
+          <p className="text-xs font-bold text-amber-950 uppercase tracking-wide mb-3">
+            🎯 Translate this
           </p>
+          <SentenceWithParts
+            sentence={correction.nextExercise!.fullSentence!}
+            parts={correction.nextExercise!.parts}
+          />
+          <p className="text-xs font-medium text-amber-900 mt-4">
+            Tap the underlined words for hints
+          </p>
+        </div>
+      )}
+
+      {/* Level Progress - Subtle Footer */}
+      {correction.progress?.evaluatedLevel && (
+        <div className="flex items-center justify-center gap-3 pt-2">
+          <span className="text-xs text-amber-600">Current Level</span>
+          <span className="px-3 py-1 bg-amber-400/80 text-amber-900 rounded-full text-sm font-bold">
+            {correction.progress.evaluatedLevel}
+          </span>
+          {correction.progress.stepsToNextLevel !== undefined && correction.progress.stepsToNextLevel > 0 && (
+            <span className="text-xs text-amber-600">
+              {correction.progress.stepsToNextLevel} step{correction.progress.stepsToNextLevel !== 1 ? 's' : ''} to level up
+            </span>
+          )}
         </div>
       )}
     </div>

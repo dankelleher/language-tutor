@@ -206,78 +206,79 @@ export function Chat({ language, onLanguageChange }: ChatProps) {
           </div>
         </div>
 
-        {/* Messages */}
-        <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-3 sm:space-y-4">
+        {/* Messages - snap scroll container */}
+        <div className="flex-1 overflow-y-auto snap-y snap-mandatory scroll-smooth">
         {messages.length === 0 && !isLoading && !isLoadingHistory && (
-          <div className="text-center mt-20">
-            <div className="relative inline-block mb-4">
-              <Image src="/buzz-128.png" alt="Buzz" width={128} height={128} className="mx-auto" />
-              <Image
-                src={language === 'French' ? '/bonjour.png' : '/hello.png'}
-                alt={language === 'French' ? 'Bonjour' : 'Hello'}
-                width={100}
-                height={70}
-                className="absolute -top-2 -right-16 sm:-right-20"
-              />
-            </div>
-            <p className="text-xl font-semibold mb-2 text-amber-900">Welcome to the hive!</p>
-            <p className="text-sm mb-6 text-amber-800">
-              Let's pollinate your brain with some {language}!
-            </p>
-            <div className="flex flex-col items-center gap-4">
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleStart()}
-                placeholder="What should we call you?"
-                className="px-4 py-2 rounded-full focus:outline-none focus:ring-2 focus:ring-amber-400 text-center bg-white placeholder:text-amber-400 text-amber-900"
-              />
-              <button
-                onClick={handleStart}
-                disabled={!name.trim()}
-                className="px-6 py-3 bg-amber-500 text-amber-950 font-semibold rounded-full hover:bg-amber-400 disabled:bg-amber-100 disabled:text-amber-400 disabled:cursor-not-allowed transition-colors"
-              >
-                Let's Buzz!
-              </button>
+          <div className="min-h-full flex items-center justify-center snap-start p-4">
+            <div className="text-center">
+              <div className="relative inline-block mb-4">
+                <Image src="/buzz-128.png" alt="Buzz" width={128} height={128} className="mx-auto" />
+                <Image
+                  src={language === 'French' ? '/bonjour.png' : '/hello.png'}
+                  alt={language === 'French' ? 'Bonjour' : 'Hello'}
+                  width={100}
+                  height={70}
+                  className="absolute -top-2 -right-16 sm:-right-20"
+                />
+              </div>
+              <p className="text-xl font-semibold mb-2 text-amber-900">Welcome to the hive!</p>
+              <p className="text-sm mb-6 text-amber-800">
+                Let's pollinate your brain with some {language}!
+              </p>
+              <div className="flex flex-col items-center gap-4">
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleStart()}
+                  placeholder="What should we call you?"
+                  className="px-4 py-2 rounded-full focus:outline-none focus:ring-2 focus:ring-amber-400 text-center bg-white placeholder:text-amber-600 text-amber-900 border border-amber-200"
+                />
+                <button
+                  onClick={handleStart}
+                  disabled={!name.trim()}
+                  className="px-6 py-3 bg-amber-500 text-amber-950 font-semibold rounded-full hover:bg-amber-400 disabled:bg-amber-100 disabled:text-amber-400 disabled:cursor-not-allowed transition-colors"
+                >
+                  Let's Buzz!
+                </button>
+              </div>
             </div>
           </div>
         )}
 
-        {messages.map((message) => (
-          <div
-            key={message.id}
-            className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
-          >
+        {/* Only show assistant messages - they contain all the context */}
+        {messages
+          .filter(message => message.role === 'assistant')
+          .map((message, index, assistantMessages) => (
             <div
-              className={`max-w-[95%] sm:max-w-2xl rounded-2xl p-3 sm:p-4 ${
-                message.role === 'user'
-                  ? 'bg-amber-500 text-amber-950'
-                  : 'bg-white/90 text-amber-900'
-              }`}
+              key={message.id}
+              className="min-h-full snap-start flex items-center justify-center p-4"
             >
-              {typeof message.content === 'string' ? (
-                <div className="whitespace-pre-wrap text-sm sm:text-base">{message.content}</div>
-              ) : (
-                <CorrectionDisplay correction={message.content} />
-              )}
+              <div className="w-full max-w-2xl">
+                <CorrectionDisplay
+                  correction={message.content as TutorResponse}
+                  isLatest={index === assistantMessages.length - 1}
+                />
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
 
         {/* Streaming response */}
         {isLoading && object && (
-          <div className="flex justify-start">
-            <div className="max-w-[95%] sm:max-w-2xl rounded-2xl p-3 sm:p-4 bg-white/90 text-amber-900">
-              <CorrectionDisplay correction={object} />
+          <div className="min-h-full snap-start flex items-center justify-center p-4">
+            <div className="w-full max-w-2xl">
+              <CorrectionDisplay correction={object} isLatest={true} />
             </div>
           </div>
         )}
 
         {isLoading && !object && (
-          <div className="flex justify-start">
-            <div className="max-w-[95%] sm:max-w-2xl rounded-2xl p-3 sm:p-4 bg-white/90 text-amber-600 italic text-sm sm:text-base">
-              Buzzing away...
+          <div className="min-h-full snap-start flex items-center justify-center p-4">
+            <div className="text-center">
+              <div className="animate-bounce mb-4">
+                <Image src="/buzz-64.png" alt="Buzz thinking" width={64} height={64} />
+              </div>
+              <p className="text-amber-600 italic">Buzzing away...</p>
             </div>
           </div>
         )}
@@ -285,16 +286,18 @@ export function Chat({ language, onLanguageChange }: ChatProps) {
         <div ref={messagesEndRef} />
       </div>
 
-        {/* Input */}
-        <div className="flex-shrink-0 bg-white/80 backdrop-blur-sm p-3 sm:p-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
-          <ChatInput
-            ref={inputRef}
-            input={input}
-            setInput={setInput}
-            onSend={handleSend}
-            isLoading={isLoading}
-          />
-        </div>
+        {/* Input - only show after conversation has started */}
+        {messages.length > 0 && (
+          <div className="flex-shrink-0 bg-white/80 backdrop-blur-sm p-3 sm:p-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
+            <ChatInput
+              ref={inputRef}
+              input={input}
+              setInput={setInput}
+              onSend={handleSend}
+              isLoading={isLoading}
+            />
+          </div>
+        )}
       </div>
     </div>
   );
