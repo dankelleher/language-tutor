@@ -39,6 +39,23 @@ export async function POST(req: Request) {
           content: latestUserMessage.content,
         },
       });
+
+      // Increment answer counter and award honey if threshold reached
+      const user = await prisma.user.update({
+        where: { id: userId },
+        data: { answersSinceLastHoney: { increment: 1 } },
+        select: { answersSinceLastHoney: true },
+      });
+
+      if (user.answersSinceLastHoney >= 5) {
+        await prisma.user.update({
+          where: { id: userId },
+          data: {
+            honey: { increment: 1 },
+            answersSinceLastHoney: 0,
+          },
+        });
+      }
     }
 
     const modelMessages: ModelMessage[] = [

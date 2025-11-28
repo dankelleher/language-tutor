@@ -13,8 +13,9 @@ model User {
   email         String        @unique
   emailVerified DateTime?
   image         String?
-  honey         Int           @default(3)
-  accounts      Account[]
+  honey                 Int           @default(3)
+  answersSinceLastHoney Int           @default(0)
+  accounts              Account[]
   sessions      Session[]
   chatSessions  ChatSession[]
   createdAt     DateTime      @default(now())
