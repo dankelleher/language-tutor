@@ -160,7 +160,7 @@ export function Chat({ language, onLanguageChange }: ChatProps) {
   };
 
   return (
-    <div className="flex h-[100dvh] bg-gradient-to-b from-amber-50/30 to-white overflow-hidden">
+    <div className="fixed inset-0 flex bg-gradient-to-b from-amber-50/30 to-white overflow-hidden pt-[env(safe-area-inset-top)]">
       {/* Bee Celebration Overlay */}
       <BeeCelebration isActive={showCelebration} onComplete={handleCelebrationComplete} />
 
