@@ -147,3 +147,22 @@ body {
 .animate-bounce-gentle {
   animation: bounce-gentle 1.5s ease-in-out infinite;
 }
+
+/* Figure-8 / infinity flight path for buzzing bee */
+@keyframes figure-8-path {
+  0% {
+    offset-distance: 0%;
+  }
+  100% {
+    offset-distance: 100%;
+  }
+}
+
+.animate-figure-8 {
+  offset-path: path('M 0,0 C 20,-15 40,-15 40,0 C 40,15 20,15 0,0 C -20,-15 -40,-15 -40,0 C -40,15 -20,15 0,0');
+  offset-anchor: center;
+  offset-rotate: auto 90deg;
+  animation: figure-8-path 2.5s ease-in-out infinite;
+  position: relative;
+  left: 40px;
+}

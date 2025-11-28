@@ -182,10 +182,10 @@ export function Chat({ language, onLanguageChange }: ChatProps) {
       {/* Main content area */}
       <div className={`flex flex-col flex-1 w-full sm:max-w-4xl sm:mx-auto overflow-hidden ${messages.length > 0 ? 'pl-7 sm:pl-0' : ''}`}>
         {/* Header */}
-        <div className="flex-shrink-0 bg-white/80 backdrop-blur-sm px-3 py-2 sm:p-4">
+        <div className="flex-shrink-0 bg-white/80 backdrop-blur-sm px-3 py-2 sm:p-4 relative z-20">
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-              <Image src="/buzz-32.png" alt="Buzz" width={32} height={32} className="flex-shrink-0" />
+              <Image src="/buzz-128.png" alt="Buzz" width={40} height={40} className="flex-shrink-0 sm:w-20 sm:h-20" />
               <div className="min-w-0">
                 <h1 className="text-lg sm:text-2xl font-bold text-amber-900 truncate">Buzzling</h1>
                 <p className="text-xs sm:text-sm text-amber-700 truncate">Learning {language}</p>
@@ -214,7 +214,7 @@ export function Chat({ language, onLanguageChange }: ChatProps) {
           <div className="min-h-full flex items-center justify-center snap-start p-4">
             <div className="text-center">
               <div className="relative inline-block mb-4">
-                <Image src="/buzz-128.png" alt="Buzz" width={128} height={128} className="mx-auto" />
+                <Image src="/buzz-192.png" alt="Buzz" width={160} height={160} className="mx-auto" />
                 <Image
                   src={language === 'French' ? '/bonjour.png' : '/hello.png'}
                   alt={language === 'French' ? 'Bonjour' : 'Hello'}
@@ -277,8 +277,8 @@ export function Chat({ language, onLanguageChange }: ChatProps) {
         {isLoading && !object && (
           <div className="min-h-full snap-start flex items-center justify-center p-4">
             <div className="text-center">
-              <div className="animate-bounce mb-4">
-                <Image src="/buzz-64.png" alt="Buzz thinking" width={64} height={64} />
+              <div className="animate-figure-8 mb-4">
+                <Image src="/buzz-128.png" alt="Buzz thinking" width={80} height={80} />
               </div>
               <p className="text-amber-600 italic">Buzzing away...</p>
             </div>

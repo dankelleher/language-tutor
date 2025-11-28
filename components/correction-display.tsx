@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import Image from 'next/image';
 import type { StreamingTutorResponse } from '@/lib/types';
 
@@ -14,6 +14,30 @@ type PartInfo = {
   translation?: string;
   notes?: string;
 };
+
+interface HintConfirmPopupProps {
+  onConfirm: () => void;
+  isSpending: boolean;
+}
+
+const HintConfirmButton = ({ onConfirm, isSpending }: HintConfirmPopupProps) => (
+  <button
+    onClick={onConfirm}
+    disabled={isSpending}
+    className={`mt-4 flex items-center gap-2 px-4 py-2 bg-white/90 hover:bg-white text-amber-900 font-semibold rounded-full transition-all shadow-sm ${
+      isSpending ? 'animate-pulse scale-95' : 'hover:scale-105'
+    }`}
+  >
+    <Image
+      src="/coin.png"
+      alt="Honey"
+      width={20}
+      height={20}
+      className={isSpending ? 'animate-spin' : ''}
+    />
+    {isSpending ? 'Getting hint...' : 'Spend 1 honey?'}
+  </button>
+);
 
 interface SentenceWithPartsProps {
   sentence: string;
@@ -67,7 +91,62 @@ const parseSentenceWithParts = (sentence: string, parts?: (Partial<PartInfo> | u
 
 const SentenceWithParts = ({ sentence, parts }: SentenceWithPartsProps) => {
   const [selectedPart, setSelectedPart] = useState<PartInfo | null>(null);
+  const [pendingPart, setPendingPart] = useState<PartInfo | null>(null);
+  const [purchasedHints, setPurchasedHints] = useState<Set<string>>(new Set());
+  const [isSpending, setIsSpending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const segments = parseSentenceWithParts(sentence, parts);
+
+  const handlePartClick = (part: PartInfo) => {
+    // If already selected, just toggle off
+    if (selectedPart === part) {
+      setSelectedPart(null);
+      return;
+    }
+
+    // If already purchased, just show it
+    if (purchasedHints.has(part.text)) {
+      setSelectedPart(part);
+      setPendingPart(null);
+      return;
+    }
+
+    // Show confirmation popup
+    setPendingPart(part);
+    setSelectedPart(null);
+  };
+
+  const handleConfirmPurchase = useCallback(async () => {
+    if (!pendingPart) return;
+
+    setIsSpending(true);
+    setError(null);
+
+    try {
+      const response = await fetch('/api/user/honey/spend', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount: 1 }),
+      });
+
+      if (response.ok) {
+        setPurchasedHints(prev => new Set(prev).add(pendingPart.text));
+        setSelectedPart(pendingPart);
+        setPendingPart(null);
+        // Notify HoneyBalance to refresh
+        window.dispatchEvent(new CustomEvent('honey-updated'));
+      } else if (response.status === 402) {
+        setError('Not enough honey!');
+        setTimeout(() => setError(null), 2000);
+      }
+    } catch {
+      setError('Failed to get hint');
+      setTimeout(() => setError(null), 2000);
+    } finally {
+      setIsSpending(false);
+    }
+  }, [pendingPart]);
+
 
   return (
     <div>
@@ -76,10 +155,11 @@ const SentenceWithParts = ({ sentence, parts }: SentenceWithPartsProps) => {
           segment.part ? (
             <button
               key={idx}
-              onClick={() => setSelectedPart(selectedPart === segment.part ? null : segment.part!)}
+              onClick={() => handlePartClick(segment.part!)}
+              disabled={isSpending}
               className={`underline decoration-amber-800 decoration-2 underline-offset-4 hover:bg-amber-300/50 rounded px-0.5 transition-colors ${
-                selectedPart === segment.part ? 'bg-amber-300/70' : ''
-              }`}
+                selectedPart === segment.part || pendingPart === segment.part ? 'bg-amber-300/70' : ''
+              } ${purchasedHints.has(segment.part.text) ? 'decoration-green-700' : ''} ${isSpending ? 'opacity-50' : ''}`}
             >
               {segment.text}
             </button>
@@ -88,15 +168,37 @@ const SentenceWithParts = ({ sentence, parts }: SentenceWithPartsProps) => {
           )
         )}
       </p>
+      {error && (
+        <div className="mt-3 p-2 bg-red-100 text-red-700 rounded-lg text-sm text-center">
+          {error}
+        </div>
+      )}
+      {pendingPart && (
+        <HintConfirmButton
+          onConfirm={handleConfirmPurchase}
+          isSpending={isSpending}
+        />
+      )}
       {selectedPart && (
-        <div className="mt-4 p-3 bg-amber-950/20 rounded-xl">
-          <p className="font-bold text-amber-950">{selectedPart.text}</p>
-          {selectedPart.translation && (
-            <p className="text-amber-950 mt-1 font-medium">→ {selectedPart.translation}</p>
-          )}
-          {selectedPart.notes && (
-            <p className="text-amber-900 mt-2 text-sm">{selectedPart.notes}</p>
-          )}
+        <div className="mt-4 p-3 bg-white/90 rounded-xl shadow-sm animate-in fade-in slide-in-from-top-2 duration-300">
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex-1">
+              <p className="font-bold text-amber-950">{selectedPart.text}</p>
+              {selectedPart.translation && (
+                <p className="text-amber-900 mt-1 font-medium">→ {selectedPart.translation}</p>
+              )}
+              {selectedPart.notes && (
+                <p className="text-amber-800 mt-2 text-sm">{selectedPart.notes}</p>
+              )}
+            </div>
+            <Image
+              src="/coin.png"
+              alt="Purchased hint"
+              width={24}
+              height={24}
+              className="flex-shrink-0 opacity-60"
+            />
+          </div>
         </div>
       )}
     </div>
@@ -130,7 +232,7 @@ export function CorrectionDisplay({ correction, isLatest = false }: CorrectionDi
       {correction.chatMessage && (
         <div className="text-center">
           <div className="inline-flex items-center gap-3 bg-white/80 backdrop-blur-sm rounded-full px-5 py-3 shadow-sm">
-            <Image src="/buzz-32.png" alt="Buzz" width={32} height={32} />
+            <Image src="/buzz-64.png" alt="Buzz" width={40} height={40} />
             <p className="text-amber-900 font-medium">{correction.chatMessage}</p>
           </div>
         </div>

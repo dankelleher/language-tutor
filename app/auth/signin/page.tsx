@@ -27,7 +27,7 @@ export default function SignInPage() {
     <div className="min-h-[100dvh] flex items-center justify-center bg-gradient-to-b from-amber-50/50 to-white p-4">
       <div className="max-w-md w-full p-6 sm:p-8 bg-white/80 backdrop-blur-sm rounded-3xl">
         <div className="text-center mb-6">
-          <Image src="/buzz-64.png" alt="Buzz" width={64} height={64} className="mx-auto mb-3" />
+          <Image src="/buzz.png" alt="Buzz" width={192} height={192} className="mx-auto mb-3" />
           <h1 className="text-2xl font-bold text-amber-900">Buzzling</h1>
           <p className="text-amber-800 mt-1">
             Join the hive and start learning!
