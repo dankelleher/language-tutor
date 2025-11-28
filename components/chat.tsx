@@ -6,6 +6,7 @@ import { experimental_useObject as useObject } from '@ai-sdk/react';
 import { ChatInput } from './chat-input';
 import { CorrectionDisplay } from './correction-display';
 import { UserButton } from './user-button';
+import { HoneyBalance } from './honey-balance';
 import { BeeCelebration } from './bee-celebration';
 import { ProgressHive } from './progress-hive';
 import { tutorResponseSchema, type TutorResponse, type Language, languages, getLevelIndex } from '@/lib/types';
@@ -201,6 +202,7 @@ export function Chat({ language, onLanguageChange }: ChatProps) {
                   <option key={lang} value={lang}>{lang}</option>
                 ))}
               </select>
+              <HoneyBalance />
               <UserButton />
             </div>
           </div>
