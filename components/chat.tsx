@@ -118,18 +118,17 @@ export function Chat({ language, onLanguageChange }: ChatProps) {
   useEffect(() => {
     console.log('[SCROLL] Streaming effect triggered', {
       isLoading,
-      hasObject: !!object,
       hasScrolled: hasScrolledForStreamRef.current,
       scrollTop: messagesContainerRef.current?.scrollTop,
       scrollHeight: messagesContainerRef.current?.scrollHeight
     });
     const container = messagesContainerRef.current;
-    if (!container || !isLoading || !object || hasScrolledForStreamRef.current) return;
+    if (!container || !isLoading || hasScrolledForStreamRef.current) return;
 
     console.log('[SCROLL] Scrolling for streaming start');
     container.scrollTop = container.scrollHeight;
     hasScrolledForStreamRef.current = true;
-  }, [isLoading, object]);
+  }, [isLoading]);
 
   // Reset flag when streaming completes
   useEffect(() => {
