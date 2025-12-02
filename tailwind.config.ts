@@ -9,6 +9,41 @@ const config: Config = {
   ],
   theme: {
   	extend: {
+  		animation: {
+  			'coin-earned': 'coin-earned 0.6s ease-in-out',
+  		},
+  		keyframes: {
+  			'coin-earned': {
+  				'0%, 100%': {
+  					transform: 'scale(1)',
+  					filter: 'brightness(1) drop-shadow(0 0 0px rgba(251, 191, 36, 0))',
+  				},
+  				'15%': {
+  					transform: 'scale(3)',
+  					filter: 'brightness(1.5) drop-shadow(0 0 8px rgba(251, 191, 36, 0.8))',
+  				},
+  				'30%': {
+  					transform: 'scale(1)',
+  					filter: 'brightness(1) drop-shadow(0 0 0px rgba(251, 191, 36, 0))',
+  				},
+  				'45%': {
+  					transform: 'scale(2.8)',
+  					filter: 'brightness(1.5) drop-shadow(0 0 8px rgba(251, 191, 36, 0.8))',
+  				},
+  				'60%': {
+  					transform: 'scale(1)',
+  					filter: 'brightness(1) drop-shadow(0 0 0px rgba(251, 191, 36, 0))',
+  				},
+  				'75%': {
+  					transform: 'scale(2.6)',
+  					filter: 'brightness(1.5) drop-shadow(0 0 8px rgba(251, 191, 36, 0.8))',
+  				},
+  				'90%': {
+  					transform: 'scale(1)',
+  					filter: 'brightness(1) drop-shadow(0 0 0px rgba(251, 191, 36, 0))',
+  				},
+  			},
+  		},
   		borderRadius: {
   			lg: 'var(--radius)',
   			md: 'calc(var(--radius) - 2px)',

@@ -162,6 +162,7 @@ body {
   offset-path: path('M 0,0 C 20,-15 40,-15 40,0 C 40,15 20,15 0,0 C -20,-15 -40,-15 -40,0 C -40,15 -20,15 0,0');
   offset-anchor: center;
   offset-rotate: auto 90deg;
+  transform-origin: center center;
   animation: figure-8-path 2.5s ease-in-out infinite;
   position: relative;
   left: 40px;

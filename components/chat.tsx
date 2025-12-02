@@ -124,6 +124,8 @@ export function Chat({ language, onLanguageChange }: ChatProps) {
             content: object as TutorResponse,
           }
         ]);
+        // Refresh honey balance (may have earned honey after 5 answers)
+        window.dispatchEvent(new CustomEvent('honey-updated'));
       }
     }
   }, [isLoading, object]);
