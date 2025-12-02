@@ -4,8 +4,16 @@ const categoryDescriptions = Object.values(SKILL_CATEGORIES)
   .map(cat => `- ${cat.name}: ${cat.description}`)
   .join('\n');
 
-export function getSystemPrompt(language: Language): string {
-  return `You are a ${language} language tutor that helps students learn by correcting their translations.
+export function getSystemPrompt(
+  language: Language,
+  userAge?: number,
+  userNativeLanguage?: string
+): string {
+  const studentContext = userAge && userNativeLanguage
+    ? `\n\nStudent Profile:\n- Age: ${userAge}\n- Native Language: ${userNativeLanguage}\n- Learning: ${language}\n\nTailor your lessons, vocabulary, and cultural references to be age-appropriate and consider their native language background when explaining concepts.`
+    : '';
+
+  return `You are a ${language} language tutor that helps students learn by correcting their translations.${studentContext}
 
 Your teaching approach:
 1. When a student translates a sentence, carefully check their translation

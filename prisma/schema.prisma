@@ -8,18 +8,20 @@ datasource db {
 }
 
 model User {
-  id            String        @id @default(cuid())
-  name          String?
-  email         String        @unique
-  emailVerified DateTime?
-  image         String?
+  id                    String        @id @default(cuid())
+  name                  String?
+  email                 String        @unique
+  emailVerified         DateTime?
+  image                 String?
+  age                   Int?
+  nativeLanguage        String?
   honey                 Int           @default(3)
   answersSinceLastHoney Int           @default(0)
   accounts              Account[]
-  sessions      Session[]
-  chatSessions  ChatSession[]
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  sessions              Session[]
+  chatSessions          ChatSession[]
+  createdAt             DateTime      @default(now())
+  updatedAt             DateTime      @updatedAt
 }
 
 model ChatSession {

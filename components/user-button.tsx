@@ -2,9 +2,13 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useSession, signOut } from 'next-auth/react';
-import { LogOut, User } from 'lucide-react';
+import { LogOut, User, Plus } from 'lucide-react';
 
-export function UserButton() {
+interface UserButtonProps {
+  onNewChat?: () => void;
+}
+
+export function UserButton({ onNewChat }: UserButtonProps) {
   const { data: session } = useSession();
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -47,6 +51,19 @@ export function UserButton() {
               </span>
             </div>
           </div>
+
+          {onNewChat && (
+            <button
+              onClick={() => {
+                onNewChat();
+                setIsOpen(false);
+              }}
+              className="w-full px-4 py-2 text-left text-sm text-honey-700 hover:bg-honey-50 flex items-center gap-2 transition-colors"
+            >
+              <Plus size={16} />
+              New chat session
+            </button>
+          )}
 
           <button
             onClick={() => signOut({ callbackUrl: '/auth/signin' })}

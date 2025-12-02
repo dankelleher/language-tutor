@@ -25,7 +25,11 @@ interface ChatProps {
 export function Chat({ language, onLanguageChange }: ChatProps) {
   const [input, setInput] = useState('');
   const [name, setName] = useState('');
+  const [age, setAge] = useState('');
+  const [nativeLanguage, setNativeLanguage] = useState('English');
   const [messages, setMessages] = useState<ChatMessage[]>([]);
+
+  console.log('[RENDER] Chat component render', { messagesCount: messages.length, language });
   const [currentLevel, setCurrentLevel] = useState<string | null>(null);
   const [stepsToNextLevel, setStepsToNextLevel] = useState<number | null>(null);
   const [showCelebration, setShowCelebration] = useState(false);
@@ -46,8 +50,28 @@ export function Chat({ language, onLanguageChange }: ChatProps) {
     },
   });
 
-  const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
+  const hasScrolledForStreamRef = useRef(false);
+  const streamingMessageIdRef = useRef<string | null>(null);
+
+  // Track scroll position changes
+  useEffect(() => {
+    const container = messagesContainerRef.current;
+    if (!container) return;
+
+    const handleScroll = () => {
+      console.log('[SCROLL EVENT]', {
+        scrollTop: container.scrollTop,
+        scrollHeight: container.scrollHeight,
+        clientHeight: container.clientHeight,
+        atBottom: Math.abs(container.scrollHeight - container.scrollTop - container.clientHeight) < 10
+      });
+    };
+
+    container.addEventListener('scroll', handleScroll, { passive: true });
+    return () => container.removeEventListener('scroll', handleScroll);
+  }, []);
 
   // Load chat history on mount
   useEffect(() => {
@@ -77,17 +101,51 @@ export function Chat({ language, onLanguageChange }: ChatProps) {
     loadHistory();
   }, []);
 
+  // Scroll to bottom when history finishes loading
+  useEffect(() => {
+    console.log('[SCROLL] History effect triggered', { isLoadingHistory, messagesCount: messages.length });
+    const container = messagesContainerRef.current;
+    if (!container || isLoadingHistory) return;
+
+    // Only scroll if we have messages (history just loaded)
+    if (messages.length > 0) {
+      console.log('[SCROLL] Scrolling after history load', { scrollHeight: container.scrollHeight });
+      container.scrollTop = container.scrollHeight;
+    }
+  }, [isLoadingHistory]);
+
+  // Scroll to bottom when streaming starts
+  useEffect(() => {
+    console.log('[SCROLL] Streaming effect triggered', {
+      isLoading,
+      hasObject: !!object,
+      hasScrolled: hasScrolledForStreamRef.current,
+      scrollTop: messagesContainerRef.current?.scrollTop,
+      scrollHeight: messagesContainerRef.current?.scrollHeight
+    });
+    const container = messagesContainerRef.current;
+    if (!container || !isLoading || !object || hasScrolledForStreamRef.current) return;
+
+    console.log('[SCROLL] Scrolling for streaming start');
+    container.scrollTop = container.scrollHeight;
+    hasScrolledForStreamRef.current = true;
+  }, [isLoading, object]);
+
+  // Reset flag when streaming completes
+  useEffect(() => {
+    console.log('[SCROLL] Reset flag effect triggered', { isLoading });
+    if (!isLoading) {
+      console.log('[SCROLL] Resetting scroll flag');
+      hasScrolledForStreamRef.current = false;
+    }
+  }, [isLoading]);
+
   // Focus input when loading finishes
   useEffect(() => {
     if (!isLoading) {
       inputRef.current?.focus();
     }
   }, [isLoading]);
-
-  // Auto-scroll to bottom when new messages arrive or object updates
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages, object]);
 
   // Check for level up when streaming completes
   useEffect(() => {
@@ -110,21 +168,55 @@ export function Chat({ language, onLanguageChange }: ChatProps) {
     setShowCelebration(false);
   }, []);
 
-  // When streaming completes, add the response to messages
+  const handleNewChat = useCallback(() => {
+    setMessages([]);
+    setChatSessionId(null);
+    setCurrentLevel(null);
+    setStepsToNextLevel(null);
+  }, []);
+
+  // When streaming starts or updates, add/update the response in messages
   useEffect(() => {
-    if (!isLoading && object && Object.keys(object).length > 0) {
-      // Check if this object is already in messages (avoid duplicates)
-      const lastMessage = messages[messages.length - 1];
-      if (lastMessage?.role !== 'assistant' || lastMessage.content !== object) {
+    console.log('[MESSAGES] Message effect triggered', {
+      isLoading,
+      hasObject: !!object,
+      objectKeys: object ? Object.keys(object).length : 0,
+      streamingMessageId: streamingMessageIdRef.current,
+      messagesCount: messages.length
+    });
+
+    if (object && Object.keys(object).length > 0) {
+      // If we're streaming and haven't added the message yet, add it
+      if (isLoading && !streamingMessageIdRef.current) {
+        console.log('[MESSAGES] Adding streaming message to array');
+        const messageId = crypto.randomUUID();
+        streamingMessageIdRef.current = messageId;
         setMessages(prev => [
           ...prev,
           {
-            id: crypto.randomUUID(),
+            id: messageId,
             role: 'assistant',
             content: object as TutorResponse,
           }
         ]);
-        // Refresh honey balance (may have earned honey after 5 answers)
+      }
+      // If we're streaming and have already added the message, update its content
+      else if (isLoading && streamingMessageIdRef.current) {
+        console.log('[MESSAGES] Updating streaming message content');
+        setMessages(prev => {
+          const newMessages = [...prev];
+          const lastMessage = newMessages[newMessages.length - 1];
+          if (lastMessage && lastMessage.id === streamingMessageIdRef.current) {
+            lastMessage.content = object as TutorResponse;
+          }
+          return newMessages;
+        });
+      }
+
+      // When streaming completes, refresh honey balance and reset ref
+      if (!isLoading && streamingMessageIdRef.current) {
+        console.log('[MESSAGES] Streaming completed, refreshing honey');
+        streamingMessageIdRef.current = null;
         window.dispatchEvent(new CustomEvent('honey-updated'));
       }
     }
@@ -152,14 +244,19 @@ export function Chat({ language, onLanguageChange }: ChatProps) {
       }));
 
       // Submit to API
-      submit({ messages: apiMessages, language, sessionId: chatSessionId });
+      submit({
+        messages: apiMessages,
+        language,
+        sessionId: chatSessionId,
+        ...(age && nativeLanguage && { userAge: parseInt(age), userNativeLanguage: nativeLanguage }),
+      });
       if (!text) setInput('');
     }
   };
 
   const handleStart = () => {
-    if (!name.trim()) return;
-    handleSend(`Hi, I'm ${name.trim()}`);
+    if (!name.trim() || !age.trim()) return;
+    handleSend(`Hi, I'm ${name.trim()}, I'm ${age} years old, I speak ${nativeLanguage}, and I want to learn ${language}!`);
   };
 
   return (
@@ -194,24 +291,18 @@ export function Chat({ language, onLanguageChange }: ChatProps) {
               </div>
             </div>
             <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
-              <select
-                value={language}
-                onChange={(e) => onLanguageChange(e.target.value as Language)}
-                className="px-2 py-1.5 sm:px-3 sm:py-2 text-sm rounded-full bg-amber-100 hover:bg-amber-200 focus:outline-none focus:ring-2 focus:ring-amber-400 text-stone-700 transition-colors"
-                disabled={messages.length > 0}
-              >
-                {languages.map((lang) => (
-                  <option key={lang} value={lang}>{lang}</option>
-                ))}
-              </select>
-              <HoneyBalance />
-              <UserButton />
+              {messages.length > 0 && (
+                <>
+                  <HoneyBalance />
+                  <UserButton onNewChat={handleNewChat} />
+                </>
+              )}
             </div>
           </div>
         </div>
 
         {/* Messages - snap scroll container */}
-        <div className="flex-1 overflow-y-auto snap-y snap-mandatory scroll-smooth">
+        <div ref={messagesContainerRef} className="flex-1 overflow-y-auto snap-y snap-proximity">
         {messages.length === 0 && !isLoading && !isLoadingHistory && (
           <div className="min-h-full flex items-center justify-center snap-start p-4">
             <div className="text-center">
@@ -227,20 +318,57 @@ export function Chat({ language, onLanguageChange }: ChatProps) {
               </div>
               <p className="text-xl font-semibold mb-2 text-amber-900">Welcome to the hive!</p>
               <p className="text-sm mb-6 text-amber-800">
-                Let's pollinate your brain with some {language}!
+                Let's get started with your language journey!
               </p>
-              <div className="flex flex-col items-center gap-4">
+              <div className="flex flex-col items-center gap-4 w-full max-w-md">
                 <input
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleStart()}
                   placeholder="What should we call you?"
-                  className="px-4 py-2 rounded-full focus:outline-none focus:ring-2 focus:ring-amber-400 text-center text-base bg-white placeholder:text-amber-600 text-amber-900 border border-amber-200"
+                  className="w-full px-4 py-2 rounded-full focus:outline-none focus:ring-2 focus:ring-amber-400 text-center text-base bg-white placeholder:text-amber-600 text-amber-900 border border-amber-200"
                 />
+                <input
+                  type="text"
+                  value={age}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (value === '' || (/^\d+$/.test(value) && value.length <= 3)) {
+                      setAge(value);
+                    }
+                  }}
+                  onKeyDown={(e) => e.key === 'Enter' && handleStart()}
+                  placeholder="How old are you?"
+                  className="w-full px-4 py-2 rounded-full focus:outline-none focus:ring-2 focus:ring-amber-400 text-center text-base bg-white placeholder:text-amber-600 text-amber-900 border border-amber-200"
+                  maxLength={3}
+                />
+                <div className="w-full">
+                  <label className="block text-sm text-amber-800 mb-1 text-center">You want to learn:</label>
+                  <select
+                    value={language}
+                    onChange={(e) => onLanguageChange(e.target.value as Language)}
+                    className="w-full px-4 py-2 rounded-full focus:outline-none focus:ring-2 focus:ring-amber-400 text-center text-base bg-white text-amber-900 border border-amber-200"
+                  >
+                    {languages.map((lang) => (
+                      <option key={lang} value={lang}>{lang}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="w-full">
+                  <label className="block text-sm text-amber-800 mb-1 text-center">You speak:</label>
+                  <select
+                    value={nativeLanguage}
+                    onChange={(e) => setNativeLanguage(e.target.value)}
+                    className="w-full px-4 py-2 rounded-full focus:outline-none focus:ring-2 focus:ring-amber-400 text-center text-base bg-white text-amber-900 border border-amber-200"
+                  >
+                    <option value="English">English</option>
+                    <option value="German">German</option>
+                  </select>
+                </div>
                 <button
                   onClick={handleStart}
-                  disabled={!name.trim()}
+                  disabled={!name.trim() || !age.trim()}
                   className="px-6 py-3 bg-amber-500 text-amber-950 font-semibold rounded-full hover:bg-amber-400 disabled:bg-amber-100 disabled:text-amber-400 disabled:cursor-not-allowed transition-colors"
                 >
                   Let's Buzz!
@@ -253,7 +381,9 @@ export function Chat({ language, onLanguageChange }: ChatProps) {
         {/* Only show assistant messages - they contain all the context */}
         {messages
           .filter(message => message.role === 'assistant')
-          .map((message, index, assistantMessages) => (
+          .map((message, index, assistantMessages) => {
+            console.log('[RENDER] Rendering completed message', { messageId: message.id, index, total: assistantMessages.length });
+            return (
             <div
               key={message.id}
               className="min-h-full snap-start flex items-center justify-center p-4"
@@ -265,18 +395,23 @@ export function Chat({ language, onLanguageChange }: ChatProps) {
                 />
               </div>
             </div>
-          ))}
+            );
+          })}
 
-        {/* Streaming response */}
-        {isLoading && object && (
+        {/* Streaming response - only show if not already added to messages array */}
+        {(() => {
+          const shouldShow = isLoading && object && !streamingMessageIdRef.current;
+          console.log('[RENDER] Streaming card', { shouldShow, isLoading, hasObject: !!object, hasStreamingId: !!streamingMessageIdRef.current });
+          return shouldShow && (
           <div className="min-h-full snap-start flex items-center justify-center p-4">
             <div className="w-full max-w-2xl">
               <CorrectionDisplay correction={object} isLatest={true} />
             </div>
           </div>
-        )}
+          );
+        })()}
 
-        {isLoading && !object && (
+        {isLoading && !streamingMessageIdRef.current && (
           <div className="min-h-full snap-start flex items-center justify-center p-4">
             <div className="text-center">
               <div className="animate-figure-8 mb-4">
@@ -286,8 +421,6 @@ export function Chat({ language, onLanguageChange }: ChatProps) {
             </div>
           </div>
         )}
-
-        <div ref={messagesEndRef} />
       </div>
 
         {/* Input - only show after conversation has started */}

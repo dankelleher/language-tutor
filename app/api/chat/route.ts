@@ -12,7 +12,7 @@ export async function POST(req: Request) {
     const session = await auth();
     const userId = session?.user?.id;
 
-    const { messages, language = 'German', sessionId } = await req.json();
+    const { messages, language = 'German', sessionId, userAge, userNativeLanguage } = await req.json();
 
     // Get the latest user message (should be the last one)
     const latestUserMessage = messages.filter((m: { role: string }) => m.role === 'user').pop();
@@ -22,6 +22,17 @@ export async function POST(req: Request) {
     if (userId && latestUserMessage) {
       // Create a new chat session if we don't have one
       if (!chatSessionId) {
+        // Update user profile with age and native language if provided
+        if (userAge !== undefined && userNativeLanguage !== undefined) {
+          await prisma.user.update({
+            where: { id: userId },
+            data: {
+              age: userAge,
+              nativeLanguage: userNativeLanguage,
+            },
+          });
+        }
+
         const chatSession = await prisma.chatSession.create({
           data: {
             userId,
@@ -58,8 +69,24 @@ export async function POST(req: Request) {
       }
     }
 
+    // Fetch user profile for system prompt context
+    let userProfile: { age: number | null; nativeLanguage: string | null } | null = null;
+    if (userId) {
+      userProfile = await prisma.user.findUnique({
+        where: { id: userId },
+        select: { age: true, nativeLanguage: true },
+      });
+    }
+
     const modelMessages: ModelMessage[] = [
-      { role: 'system', content: getSystemPrompt(language as Language) },
+      {
+        role: 'system',
+        content: getSystemPrompt(
+          language as Language,
+          userProfile?.age ?? undefined,
+          userProfile?.nativeLanguage ?? undefined
+        ),
+      },
       ...messages,
     ];
 

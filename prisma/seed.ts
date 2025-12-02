@@ -12,6 +12,8 @@ async function main() {
       id: 'dev-user',
       email: 'dev@localhost',
       name: 'Dev User',
+      age: 25,
+      nativeLanguage: 'English',
       honey: 3,
     },
   });
