@@ -22,16 +22,20 @@ export async function POST(req: Request) {
     if (userId && latestUserMessage) {
       // Create a new chat session if we don't have one
       if (!chatSessionId) {
-        // Update user profile with age and native language if provided
-        if (userAge !== undefined && userNativeLanguage !== undefined) {
-          await prisma.user.update({
-            where: { id: userId },
-            data: {
-              age: userAge,
-              nativeLanguage: userNativeLanguage,
-            },
-          });
-        }
+        // Ensure user exists and update profile with age and native language if provided
+        const userData = userAge !== undefined && userNativeLanguage !== undefined
+          ? { age: userAge, nativeLanguage: userNativeLanguage }
+          : {};
+
+        await prisma.user.upsert({
+          where: { id: userId },
+          update: userData,
+          create: {
+            id: userId,
+            email: session?.user?.email ?? '',
+            ...userData,
+          },
+        });
 
         const chatSession = await prisma.chatSession.create({
           data: {
@@ -52,20 +56,28 @@ export async function POST(req: Request) {
       });
 
       // Increment answer counter and award honey if threshold reached
-      const user = await prisma.user.update({
+      // Use findUnique first to check if user exists
+      const existingUser = await prisma.user.findUnique({
         where: { id: userId },
-        data: { answersSinceLastHoney: { increment: 1 } },
         select: { answersSinceLastHoney: true },
       });
 
-      if (user.answersSinceLastHoney >= 5) {
-        await prisma.user.update({
+      if (existingUser) {
+        const user = await prisma.user.update({
           where: { id: userId },
-          data: {
-            honey: { increment: 1 },
-            answersSinceLastHoney: 0,
-          },
+          data: { answersSinceLastHoney: { increment: 1 } },
+          select: { answersSinceLastHoney: true },
         });
+
+        if (user.answersSinceLastHoney >= 5) {
+          await prisma.user.update({
+            where: { id: userId },
+            data: {
+              honey: { increment: 1 },
+              answersSinceLastHoney: 0,
+            },
+          });
+        }
       }
     }
 

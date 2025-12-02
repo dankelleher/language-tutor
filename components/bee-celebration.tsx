@@ -12,6 +12,9 @@ interface Bee {
   delay: number;
   duration: number;
   path: 'left' | 'right' | 'up';
+  endX: string;
+  endY: string;
+  endRotate: string;
 }
 
 interface BeeCelebrationProps {
@@ -25,16 +28,24 @@ export function BeeCelebration({ isActive, onComplete }: BeeCelebrationProps) {
   useEffect(() => {
     if (isActive) {
       // Generate a swarm of bees
-      const newBees: Bee[] = Array.from({ length: 20 }, (_, i) => ({
-        id: i,
-        x: 45 + Math.random() * 10, // Start near center
-        y: 50,
-        rotation: Math.random() * 360,
-        scale: 0.6 + Math.random() * 0.8,
-        delay: Math.random() * 0.3,
-        duration: 1.5 + Math.random() * 1,
-        path: ['left', 'right', 'up'][Math.floor(Math.random() * 3)] as 'left' | 'right' | 'up',
-      }));
+      const newBees: Bee[] = Array.from({ length: 20 }, (_, i) => {
+        const path = ['left', 'right', 'up'][Math.floor(Math.random() * 3)] as 'left' | 'right' | 'up';
+        const rotation = Math.random() * 360;
+        return {
+          id: i,
+          x: 45 + Math.random() * 10, // Start near center
+          y: 50,
+          rotation,
+          scale: 0.6 + Math.random() * 0.8,
+          delay: Math.random() * 0.3,
+          duration: 1.5 + Math.random() * 1,
+          path,
+          endX: path === 'left' ? '-100px' : path === 'right' ? '100px' : `${(Math.random() - 0.5) * 150}px`,
+          endY: path === 'up' ? '-400px' : `-${200 + Math.random() * 200}px`,
+          endRotate: `${rotation + (Math.random() - 0.5) * 720}deg`,
+        };
+      });
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setBees(newBees);
 
       // Clear after animation
@@ -61,9 +72,9 @@ export function BeeCelebration({ isActive, onComplete }: BeeCelebrationProps) {
             transform: `scale(${bee.scale})`,
             animationDelay: `${bee.delay}s`,
             animationDuration: `${bee.duration}s`,
-            '--bee-end-x': bee.path === 'left' ? '-100px' : bee.path === 'right' ? '100px' : `${(Math.random() - 0.5) * 150}px`,
-            '--bee-end-y': bee.path === 'up' ? '-400px' : `-${200 + Math.random() * 200}px`,
-            '--bee-rotate': `${bee.rotation + (Math.random() - 0.5) * 720}deg`,
+            '--bee-end-x': bee.endX,
+            '--bee-end-y': bee.endY,
+            '--bee-rotate': bee.endRotate,
           } as React.CSSProperties}
         >
           <Image src="/buzz-32.png" alt="Buzz" width={32} height={32} />

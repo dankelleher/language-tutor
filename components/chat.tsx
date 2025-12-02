@@ -99,6 +99,7 @@ export function Chat({ language, onLanguageChange }: ChatProps) {
     };
 
     loadHistory();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Scroll to bottom when history finishes loading
@@ -112,6 +113,7 @@ export function Chat({ language, onLanguageChange }: ChatProps) {
       console.log('[SCROLL] Scrolling after history load', { scrollHeight: container.scrollHeight });
       container.scrollTop = container.scrollHeight;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoadingHistory]);
 
   // Scroll to bottom when streaming starts
@@ -219,6 +221,7 @@ export function Chat({ language, onLanguageChange }: ChatProps) {
         window.dispatchEvent(new CustomEvent('honey-updated'));
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoading, object]);
 
   const handleSend = (text?: string) => {
@@ -317,7 +320,7 @@ export function Chat({ language, onLanguageChange }: ChatProps) {
               </div>
               <p className="text-xl font-semibold mb-2 text-amber-900">Welcome to the hive!</p>
               <p className="text-sm mb-6 text-amber-800">
-                Let's get started with your language journey!
+                Let&apos;s get started with your language journey!
               </p>
               <div className="flex flex-col items-center gap-4 w-full max-w-md">
                 <input
@@ -370,7 +373,7 @@ export function Chat({ language, onLanguageChange }: ChatProps) {
                   disabled={!name.trim() || !age.trim()}
                   className="px-6 py-3 bg-amber-500 text-amber-950 font-semibold rounded-full hover:bg-amber-400 disabled:bg-amber-100 disabled:text-amber-400 disabled:cursor-not-allowed transition-colors"
                 >
-                  Let's Buzz!
+                  Let&apos;s Buzz!
                 </button>
               </div>
             </div>

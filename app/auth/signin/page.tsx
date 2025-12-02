@@ -61,7 +61,7 @@ export default function SignInPage() {
         </form>
 
         <p className="mt-4 text-xs text-amber-600 text-center">
-          We'll send a sweet little link to your inbox
+          We&apos;ll send a sweet little link to your inbox
         </p>
 
         {isDev && (

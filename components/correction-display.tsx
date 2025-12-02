@@ -205,7 +205,7 @@ const SentenceWithParts = ({ sentence, parts }: SentenceWithPartsProps) => {
   );
 };
 
-export function CorrectionDisplay({ correction, isLatest = false }: CorrectionDisplayProps) {
+export function CorrectionDisplay({ correction }: CorrectionDisplayProps) {
   const [expandedExplanation, setExpandedExplanation] = useState<number | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
