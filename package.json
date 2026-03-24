@@ -11,7 +11,16 @@
     "start": "next start",
     "lint": "eslint .",
     "cli": "tsx index.ts",
-    "db:seed": "tsx prisma/seed.ts"
+    "db:seed": "tsx prisma/seed.ts",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:headed": "playwright test --headed",
+    "test:e2e:debug": "playwright test --debug",
+    "test:e2e:chromium": "playwright test --project=chromium",
+    "test:e2e:integration": "playwright test --config=playwright.integration.config.ts",
+    "test:e2e:integration:headed": "playwright test --config=playwright.integration.config.ts --headed",
+    "test:e2e:integration:debug": "playwright test --config=playwright.integration.config.ts --debug",
+    "test:db:setup": "docker compose -f docker-compose.test.yml up -d && DATABASE_URL=postgresql://test:test@localhost:5433/buzzling_test pnpm prisma migrate deploy"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
@@ -42,6 +51,8 @@
   },
   "devDependencies": {
     "@auth/prisma-adapter": "^2.11.1",
+    "@faker-js/faker": "^10.2.0",
+    "@playwright/test": "^1.57.0",
     "@prisma/client": "^7.0.1",
     "@types/node": "latest",
     "@types/pg": "^8.15.6",
