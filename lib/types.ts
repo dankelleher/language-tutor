@@ -40,15 +40,12 @@ export type CategoryLevel = z.infer<typeof categoryLevelSchema>;
 
 export const tutorResponseSchema = z.object({
   chatMessage: z.string()
-      .max(100)
-      .describe('A brief message from the tutor to the student, e.g., encouraging them to keep going, giving them context on the corrections, or greeting them.'),
+      .describe('A brief message (1-2 sentences) from the tutor to the student, e.g., encouraging them to keep going, giving them context on the corrections, or greeting them.'),
   englishSentence: z.string().describe('The original input text in English.'),
   submittedSentence: z.string().describe('The submitted input text in the target language.'),
   correctedResponse: z.string().describe('The correct translation of the input text. Only provide this if the user made an attempt at a translation.'),
-  explanations: z.array(z
-      .string()
-      .max(200)
-  ).describe('An array of explanations for any mistakes made in the submitted translation.'),
+  explanations: z.array(z.string())
+      .describe('An array of brief explanations for any mistakes made in the submitted translation.'),
   nextExercise: z.object({
       fullSentence: z.string().describe('The next sentence to translate to the target language, adapted to the student\'s level.'),
       parts: z.array(z.object({

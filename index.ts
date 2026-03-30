@@ -1,9 +1,19 @@
 import 'dotenv/config';
-import {streamObject, ModelMessage, generateText} from 'ai';
-import { anthropic } from '@ai-sdk/anthropic';
+import {streamText, Output, ModelMessage, generateText} from 'ai';
 import { z } from 'zod';
+import { getModel } from './lib/ai-provider';
 
 const language = "German" // "French"
+
+const schema = z.object({
+    chatMessage: z.string().describe('A brief message from the tutor to the student, e.g., encouraging them to keep going, giving them context on the corrections, or greeting them.'),
+    englishSentence: z.string().describe('The original input text in English.'),
+    submittedSentence: z.string().describe('The submitted input text in ' + language + '.'),
+    correctedResponse: z.string().describe('The correct translation of the input text.'),
+    explanations: z.string().array().describe('An array of explanations for any mistakes made in the submitted translation.'),
+    nextSentence: z.string().describe('The next sentence to translate to ' + language + ', adapted to the student\'s level.'),
+    evaluatedLevel: z.string().describe('The evaluated ' + language + ' level of the student (A1-C2).'),
+});
 
 const messages: ModelMessage[] = [
     {
@@ -20,7 +30,7 @@ const messages: ModelMessage[] = [
 ]
 
 const firstSentence = await generateText({
-    model: anthropic('claude-sonnet-4-5-20250929'),
+    model: getModel(),
     messages
 });
 
@@ -49,29 +59,19 @@ while(true) {
         content: input
     })
 
-    const request = streamObject({
-        model: anthropic('claude-sonnet-4-5-20250929'),
+    const request = streamText({
+        model: getModel(),
         messages,
-        schema: z.object({
-            chatMessage: z.string().describe('A brief message from the tutor to the student, e.g., encouraging them to keep going, giving them context on the corrections, or greeting them.'),
-            englishSentence: z.string().describe('The original input text in English.'),
-            submittedSentence: z.string().describe('The submitted input text in ' + language + '.'),
-            correctedResponse: z.string().describe('The correct translation of the input text.'),
-            explanations: z.string().array().describe('An array of explanations for any mistakes made in the submitted translation.'),
-            nextSentence: z.string().describe('The next sentence to translate to ' + language + ', adapted to the student\'s level.'),
-            evaluatedLevel: z.string().describe('The evaluated ' + language + ' level of the student (A1-C2).'),
-        }),
+        output: Output.object({ schema }),
     });
 
-    for await (const partialObject of request.partialObjectStream) {
+    for await (const partialObject of request.partialOutputStream) {
         console.clear();
         console.log(partialObject);
     }
 
     messages.push({
         role: 'assistant',
-        content: JSON.stringify(await request.object)
+        content: JSON.stringify(await request.output)
     })
 };
-
-

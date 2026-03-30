@@ -1,7 +1,7 @@
 import { streamObject, type ModelMessage } from 'ai';
-import { anthropic } from '@ai-sdk/anthropic';
 import { getSystemPrompt } from '@/lib/prompts';
 import { tutorResponseSchema, type Language } from '@/lib/types';
+import { getModel } from '@/lib/ai-provider';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 
@@ -56,7 +56,6 @@ export async function POST(req: Request) {
       });
 
       // Increment answer counter and award honey if threshold reached
-      // Use findUnique first to check if user exists
       const existingUser = await prisma.user.findUnique({
         where: { id: userId },
         select: { answersSinceLastHoney: true },
@@ -103,10 +102,13 @@ export async function POST(req: Request) {
     ];
 
     const result = streamObject({
-      model: anthropic('claude-sonnet-4-5-20250929'),
+      model: getModel(),
       messages: modelMessages,
       schema: tutorResponseSchema,
-      onFinish: async ({ object }) => {
+      onFinish: async ({ object, error }) => {
+        if (error) {
+          console.error('[CHAT] streamObject validation error:', JSON.stringify(error, null, 2));
+        }
         // Save assistant response to database if authenticated
         if (userId && chatSessionId && object) {
           await prisma.chatMessage.create({

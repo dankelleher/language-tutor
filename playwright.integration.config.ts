@@ -17,7 +17,7 @@ export default defineConfig({
   reporter: [
     ['html', { outputFolder: 'playwright-report-integration' }],
     ['list'],
-    ...(process.env.CI ? [['github' as const]] : []),
+    ...(process.env.CI ? [['github'] as const] : []),
   ],
   use: {
     baseURL: 'http://localhost:3300',
